@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
 
 
- 	std::cout << midifile << std::endl;
+// 	std::cout << midifile << std::endl;
 
 //	int tracks = midifile.getTrackCount();
 //	std::cout << "TPQ: " << midifile.getTicksPerQuarterNote() << std::endl;

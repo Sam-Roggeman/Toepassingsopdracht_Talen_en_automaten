@@ -19,7 +19,7 @@ Mainwindow::~Mainwindow()
 void Mainwindow::on_pushButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open Image"), "/home/jana", tr("Image Files ( *.midi)"));
+                                                    tr("Open Image"), "/home/jana", tr("Image Files ( *.mid)"));
 }
 
 void Mainwindow::on_pushButton_2_clicked()
