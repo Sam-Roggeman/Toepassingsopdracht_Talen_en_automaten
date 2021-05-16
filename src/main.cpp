@@ -6,38 +6,44 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include "mainwindow.h"
+#include <QApplication>
 
-
-int main()
+int main(int argc, char *argv[])
 {
-	smf::MidiFile midifile;
-	std::string midi_file_name = "Super Mario 64 - Dire Dire Docks";
-	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
-	midifile.doTimeAnalysis();
-	midifile.linkNotePairs();
+    QApplication a(argc, argv);
+    Mainwindow w;
+    w.show();
+    return a.exec();
+
+//	smf::MidiFile midifile;
+//	std::string midi_file_name = "Super Mario 64 - Dire Dire Docks";
+//	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
+//	midifile.doTimeAnalysis();
+//	midifile.linkNotePairs();
 
 
 
 //	std::cout << midifile << std::endl;
 
-	int tracks = midifile.getTrackCount();
-	std::cout << "TPQ: " << midifile.getTicksPerQuarterNote() << std::endl;
-	if (tracks > 1) std::cout << "TRACKS: " << tracks << std::endl;
-	for (int track=0; track<tracks; track++) {
-		if (tracks > 1) std::cout << "\nTrack " << track << std::endl;
-		std::cout << "Tick\tSeconds\tDur\tMessage" << std::endl;
-		for (int event=0; event<midifile[track].size(); event++) {
-			std::cout << std::dec << midifile[track][event].tick;
-			std::cout << '\t' << std::dec << midifile[track][event].seconds;
-			std::cout << '\t';
-			if (midifile[track][event].isNoteOn())
-				std::cout << midifile[track][event].getDurationInSeconds();
-			std::cout << '\t' << std::hex;
-			for (int i=0; i<midifile[track][event].size(); i++)
-				std::cout << (int)midifile[track][event][i] << ' ';
-			std::cout << std::endl;
-		}
-	}
+//	int tracks = midifile.getTrackCount();
+//	std::cout << "TPQ: " << midifile.getTicksPerQuarterNote() << std::endl;
+//	if (tracks > 1) std::cout << "TRACKS: " << tracks << std::endl;
+//	for (int track=0; track<tracks; track++) {
+//		if (tracks > 1) std::cout << "\nTrack " << track << std::endl;
+//		std::cout << "Tick\tSeconds\tDur\tMessage" << std::endl;
+//		for (int event=0; event<midifile[track].size(); event++) {
+//			std::cout << std::dec << midifile[track][event].tick;
+//			std::cout << '\t' << std::dec << midifile[track][event].seconds;
+//			std::cout << '\t';
+//			if (midifile[track][event].isNoteOn())
+//				std::cout << midifile[track][event].getDurationInSeconds();
+//			std::cout << '\t' << std::hex;
+//			for (int i=0; i<midifile[track][event].size(); i++)
+//				std::cout << (int)midifile[track][event][i] << ' ';
+//			std::cout << std::endl;
+//		}
+//	}
 
 //	srand( (unsigned)time(nullptr) );
 //
