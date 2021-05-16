@@ -6,15 +6,21 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include "mainwindow.h"
+#include <QApplication>
 
-
-int main()
+int main(int argc, char *argv[])
 {
-	smf::MidiFile midifile;
-	std::string midi_file_name = "Super Mario 64 - Dire Dire Docks";
-	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
-	midifile.doTimeAnalysis();
-	midifile.linkNotePairs();
+    QApplication a(argc, argv);
+    Mainwindow w;
+    w.show();
+    return a.exec();
+
+//	smf::MidiFile midifile;
+//	std::string midi_file_name = "Super Mario 64 - Dire Dire Docks";
+//	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
+//	midifile.doTimeAnalysis();
+//	midifile.linkNotePairs();
 
 
 
