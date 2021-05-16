@@ -10,6 +10,12 @@
 template <typename T>
 class VariableMarkovChain
 {
+    /**
+     *     n1, n5, n3, n1, n4, n3, n3, n2
+     *
+     *     state 1 = n1
+     */
+
     struct State
     {
         State(const T& _data)
@@ -19,10 +25,14 @@ class VariableMarkovChain
 
         T data;
         std::map<double, std::set<State*> > transitions;
+        std::vector<T> previous_data;
     };
     std::set<State*> states;
+    std::set<State*> basic_states;
     State* start_state = nullptr;
-
+/**
+ *
+ */
 public:
     MarkovChain() = default;
     ~MarkovChain()
