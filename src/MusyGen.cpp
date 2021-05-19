@@ -91,7 +91,9 @@ void MusyGen::importMidiFile(const std::string& filename)
 
 void MusyGen::exportMidiFile(const std::string& filename)
 {
-
+	std::ofstream outputfile("output.mid");
+	outputfile << generated_midifile;
+	outputfile.close();
 }
 
 void MusyGen::generateMusic(unsigned int duration)
