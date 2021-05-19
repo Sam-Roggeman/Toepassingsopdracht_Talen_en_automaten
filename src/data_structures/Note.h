@@ -8,13 +8,10 @@ class Note
 {
 public:
 	int key;
-	int start_velocity;
-	int end_velocity;
+	int velocity;
 	int duration;
 	int next_note_delay;
-	int tempo;
 	int instrument;
-	int time_stamp;
 
 	Note();
 	Note(int _key, int _velocity, int _duration, int _next_note_delay,

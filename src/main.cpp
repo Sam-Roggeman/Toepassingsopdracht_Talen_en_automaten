@@ -90,11 +90,13 @@ int main(int argc, char* argv[])
 	srand((unsigned)time(nullptr));
 
 //	smf::MidiFile midifile;
-//	std::string midi_file_name = "Super Mario 64 - Dire Dire Docks";
+//	std::string midi_file_name = "twinkle_twinkle";
 //	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
 //	midifile.doTimeAnalysis();
 //	midifile.linkNotePairs();
 
+	MusyGen sys;
+	sys.importMidiFile("twinkle_twinkle");
 
 // 	std::cout << midifile << std::endl;
 
@@ -173,7 +175,7 @@ int main(int argc, char* argv[])
 
 //	std::cout << std::boolalpha << food_chain.isLegal() << std::endl; // should give true
 
-	markovModelTrainingExample(food_chain.randomWalk(1000));
+//	markovModelTrainingExample(food_chain.randomWalk(1000));
 
 	return 0;
 }

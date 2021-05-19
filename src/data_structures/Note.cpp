@@ -7,7 +7,6 @@ Note::Note()
 	duration = 0;
 	next_note_delay = 0;
 	instrument = 0;
-	time_stamp = 0;
 }
 
 Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
@@ -18,7 +17,6 @@ Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
 	duration = _duration;
 	next_note_delay = _next_note_delay;
 	instrument = _instrument;
-	time_stamp = _time_stamp;
 }
 
 Note::Note(std::string note_string)
@@ -53,12 +51,11 @@ Note::Note(std::string note_string)
 			duration = std::stoi(sub_string2);
 		else if (sub_string == "next_note_delay")
 			next_note_delay = std::stoi(sub_string2);
-		else if (sub_string == "tempo")
-			tempo = std::stoi(sub_string2);
+//		else if (sub_string == "tempo")
+//			tempo = std::stoi(sub_string2);
 		else if (sub_string == "instrument")
+		        instrument = std::stoi(sub_string2);
 			instrument = std::stoi(sub_string2);
-		else if (sub_string == "time_stamp")
-			time_stamp = std::stoi(sub_string2);
 	}
 }
 
@@ -70,7 +67,7 @@ std::string Note::toString() const
 	note_string += ", velocity: " + std::to_string(velocity);
 	note_string += ", duration: " + std::to_string(duration);
 	note_string += ", next_note_delay: " + std::to_string(next_note_delay);
-	note_string += ", tempo: " + std::to_string(tempo);
+//	note_string += ", tempo: " + std::to_string(tempo);
 	note_string += ", instrument: " + std::to_string(instrument);
 
 	return note_string;
