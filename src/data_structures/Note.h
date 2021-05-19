@@ -9,8 +9,8 @@ class Note
 public:
 	int key;
 	int velocity;
-	int duration;
-	int next_note_delay;
+	double duration;
+	double next_note_delay;
 	int instrument;
 
 	Note();
