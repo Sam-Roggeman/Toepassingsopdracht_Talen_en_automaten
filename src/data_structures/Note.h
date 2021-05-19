@@ -17,8 +17,8 @@ public:
 	int time_stamp;
 
 	Note();
-	Note(int _key, int _start_velocity, int _end_velocity, int _duration, int _next_note_delay, int _tempo,
-			int _instrument, int _time_stamp);
+	Note(int _key, int _velocity, int _duration, int _next_note_delay,
+			int _instrument);
 	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;

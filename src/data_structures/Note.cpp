@@ -7,20 +7,18 @@ Note::Note()
 	end_velocity = 0;
 	duration = 0;
 	next_note_delay = 0;
-	tempo = 0;
 	instrument = 0;
 	time_stamp = 0;
 }
 
-Note::Note(int _key, int _start_velocity, int _end_velocity, int _duration, int _next_note_delay, int _tempo,
-		int _instrument, int _time_stamp)
+Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
+		int _instrument)
 {
 	key = _key;
 	start_velocity = _start_velocity;
 	end_velocity = _end_velocity;
 	duration = _duration;
 	next_note_delay = _next_note_delay;
-	tempo = _tempo;
 	instrument = _instrument;
 	time_stamp = _time_stamp;
 }

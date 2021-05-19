@@ -12,6 +12,7 @@ class MusyGen
     unsigned int order = 1;
     smf::MidiFile input_midifile;
     smf::MidiFile generated_midifile;
+    int volume = 50;
 
 public:
     MusyGen() = default;
