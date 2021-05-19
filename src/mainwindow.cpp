@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDialog>
-#include <QFileDialog>
-#include <string>
+
 
 Mainwindow::Mainwindow(QWidget *parent) :
     QDialog(parent),
@@ -20,6 +18,8 @@ void Mainwindow::on_pushButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open Image"), "/home/jana", tr("Image Files ( *.mid)"));
+    MusyGen musyGen;
+    musyGen.importMidiFile(fileName.toStdString());
 }
 
 void Mainwindow::on_pushButton_2_clicked()

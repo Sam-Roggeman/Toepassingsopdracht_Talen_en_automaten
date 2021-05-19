@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QDialog>
-
+#include <QFileDialog>
+#include <string>
+#include "MusyGen.h"
 namespace Ui {
 class Mainwindow;
 }
