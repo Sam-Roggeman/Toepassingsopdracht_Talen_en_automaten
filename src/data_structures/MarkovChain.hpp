@@ -23,7 +23,6 @@ class MarkovChain
 	};
 
 	std::set<State*> states;
-	State* start_state = nullptr;
 
 public:
 	MarkovChain() = default;

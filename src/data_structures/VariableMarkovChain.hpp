@@ -181,9 +181,9 @@ public:
 	{
 		MarkovChain<std::vector<T>> first_order_markov_chain;
 
+		// states
 		for (const auto& state : states)
 		{
-			// states
 			for (const auto& previous_states_set : state->transitions)
 			{
 				std::vector<T> new_data;
@@ -193,8 +193,21 @@ public:
 
 				new_data.push_back(state->data);
 				first_order_markov_chain.addState(new_data);
+			}
+		}
 
-				// transitions
+		// transitions
+		for (const auto& state : states)
+		{
+			for (const auto& previous_states_set : state->transitions)
+			{
+				std::vector<T> new_data;
+
+				for (const auto& previous_state : previous_states_set.first)
+					new_data.push_back(previous_state->data);
+
+				new_data.push_back(state->data);
+
 				for (const auto& transition : previous_states_set.second)
 				{
 					for (const auto& state2 : transition.second)
@@ -207,6 +220,7 @@ public:
 				}
 			}
 		}
+
 
 		return first_order_markov_chain;
 	}
