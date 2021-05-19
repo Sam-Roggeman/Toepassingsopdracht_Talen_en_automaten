@@ -5,7 +5,7 @@
 #include "../libs/midifile/include/MidiFile.h"
 #include "data_structures/Note.h"
 #include "data_structures/MarkovChain.hpp"
-#include "../libs/midifile/include/RtMidi.h"
+#include "../libs/RTMidi/include/RtMidi.h"
 
 class MusyGen
 {
