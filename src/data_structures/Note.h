@@ -1,5 +1,5 @@
-#ifndef MUSYGENTEST_NOTE_H
-#define MUSYGENTEST_NOTE_H
+#ifndef MUSYGEN_NOTE_H
+#define MUSYGEN_NOTE_H
 
 
 #include <string>
@@ -19,7 +19,7 @@ public:
 	Note();
 	Note(int _key, int _start_velocity, int _end_velocity, int _duration, int _next_note_delay, int _tempo,
 			int _instrument, int _time_stamp);
-	Note(std::string note_string);
+	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;
 
@@ -27,4 +27,4 @@ public:
 };
 
 
-#endif //MUSYGENTEST_NOTE_H
+#endif //MUSYGEN_NOTE_H

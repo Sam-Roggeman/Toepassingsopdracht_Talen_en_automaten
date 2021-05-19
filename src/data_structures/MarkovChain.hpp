@@ -1,5 +1,5 @@
-#ifndef MUSYGENTEST_MARKOVCHAIN_HPP
-#define MUSYGENTEST_MARKOVCHAIN_HPP
+#ifndef MUSYGEN_MARKOVCHAIN_HPP
+#define MUSYGEN_MARKOVCHAIN_HPP
 
 
 #include <vector>
@@ -7,25 +7,27 @@
 #include <set>
 #include <iostream>
 
-template <typename T>
+template<typename T>
 
 class MarkovChain
 {
 	struct State
 	{
-		State(const T& _data)
+		explicit State(const T& _data)
 		{
 			data = _data;
 		}
 
 		T data;
-		std::map<double, std::set<State*> > transitions;
+		std::map<double, std::set<State*>> transitions;
 	};
+
 	std::set<State*> states;
 	State* start_state = nullptr;
 
 public:
 	MarkovChain() = default;
+
 	~MarkovChain()
 	{
 		for (auto& state : states) delete state;
@@ -38,8 +40,11 @@ public:
 		State* new_state = new State(data);
 		states.insert(new_state);
 	}
+
 	void removeState(const T& data)
 	{
+		if (!stateExists(data)) return;
+
 		State* state_to_remove = getState(data);
 		for (auto& state : states)
 		{
@@ -67,46 +72,62 @@ public:
 	const T& getRandomState()
 	{
 		double chance = 1.0 / states.size();
-		double randnumber = ((double) rand() / (RAND_MAX));
+		double rand_number = ((double)rand() / (RAND_MAX));
 		double current_number = 0;
 
-		for (auto& state : states)
+		for (const auto& state : states)
 		{
 			current_number += chance;
-			if (randnumber < current_number) return state->data;
+			if (rand_number < current_number) return state->data;
 		}
 		return (*states.end())->data;
 	}
 
 	const T& getNextState(const T& data)
 	{
-		State* current_state = getState(data);
-		double randnumber = ((double) rand() / (RAND_MAX));
+		return getNextState(getState(data))->data;
+	}
+
+	std::vector<T*> randomWalk(unsigned int iterations)
+	{
+		std::vector<T*> result;
+		State* current_state;
+
+		double chance = 1.0 / states.size();
+		double rand_number = ((double)rand() / (RAND_MAX));
 		double current_number = 0;
 
-		for (auto& transition : current_state->transitions)
+		// first state
+		for (const auto& state : states)
 		{
-			for (auto& state2 : transition.second)
-			{
-				current_number += transition.first;
-				if (randnumber < current_number) return state2->data;
-			}
+			current_number += chance;
+			if (rand_number < current_number) current_state = state;
 		}
-        return (*states.end())->data;
+
+		result.push_back(&current_state->data);
+
+		for (int i = 0; i < iterations - 1; i++)
+		{
+			current_state = getNextState(current_state);
+			result.push_back(&current_state->data);
+		}
+
+		return result;
 	}
 
 	bool stateExists(const T& data)
 	{
 		return getState(data);
 	}
+
 	bool isLegal()
 	{
-		for (auto& state : states)
+		for (const auto& state : states)
 		{
 			double sum_of_probabilities = 0;
-			for (auto& transition : state->transitions)
+			for (const auto& transition : state->transitions)
 			{
-				for (auto& state2 : transition.second)
+				for (const auto& state2 : transition.second)
 					sum_of_probabilities += transition.first;
 			}
 			// floating point rounding correction
@@ -118,10 +139,26 @@ public:
 private:
 	State* getState(const T& data)
 	{
-		for (auto state : states) if (state->data == data) return state;
+		for (const auto state : states) if (state->data == data) return state;
 		return nullptr;
+	}
+
+	State* getNextState(State* current_state)
+	{
+		double rand_number = ((double)rand() / (RAND_MAX));
+		double current_number = 0;
+
+		for (const auto& transition : current_state->transitions)
+		{
+			for (const auto& state2 : transition.second)
+			{
+				current_number += transition.first;
+				if (rand_number < current_number) return state2;
+			}
+		}
+		return *states.end();
 	}
 };
 
 
-#endif //MUSYGENTEST_MARKOVCHAIN_HPP
+#endif //MUSYGEN_MARKOVCHAIN_HPP

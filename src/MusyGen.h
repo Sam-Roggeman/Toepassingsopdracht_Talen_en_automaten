@@ -1,5 +1,5 @@
-#ifndef MUSYGENTEST_MUSYGEN_H
-#define MUSYGENTEST_MUSYGEN_H
+#ifndef MUSYGEN_MUSYGEN_H
+#define MUSYGEN_MUSYGEN_H
 
 
 #include "../libs/midifile/include/MidiFile.h"
@@ -8,8 +8,10 @@
 
 class MusyGen
 {
-    MarkovChain<Note> music_markov_chain;
-    smf::MidiFile midifile;
+    MarkovChain<std::vector<Note>> music_markov_chain;
+    unsigned int order = 1;
+    smf::MidiFile input_midifile;
+    smf::MidiFile generated_midifile;
 
 public:
     MusyGen() = default;
@@ -18,11 +20,11 @@ public:
     void exportMidiFile(const std::string& filename);
 
     void generateMusic(unsigned int duration);
-
-
     void playMusicInfinitly();
 
+private:
+	void trainMarkovModel(const std::vector<std::vector<Note>>& notes);
 };
 
 
-#endif //MUSYGENTEST_MUSYGEN_H
+#endif //MUSYGEN_MUSYGEN_H
