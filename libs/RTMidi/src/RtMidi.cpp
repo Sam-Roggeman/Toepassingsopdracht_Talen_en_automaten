@@ -37,7 +37,7 @@
 */
 /**********************************************************************/
 
-#include "libs/midifile/include/RtMidi.h"
+#include "libs/RTMidi/include/RtMidi.h"
 #include <sstream>
 
 #if (TARGET_OS_IPHONE == 1)
