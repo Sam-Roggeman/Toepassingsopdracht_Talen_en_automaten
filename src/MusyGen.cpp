@@ -98,8 +98,57 @@ void MusyGen::exportMidiFile(const std::string& filename)
 
 void MusyGen::generateMusic(unsigned int duration)
 {
+	std::vector<Note*> current_group_of_notes = music_markov_chain.getRandomState();
+	double curr_duration = 0;
+	findMaxDuration(current_group_of_notes,curr_duration);
+	addNotesToMedi(current_group_of_notes);
 
+	while (curr_duration<(double) duration){
+		current_group_of_notes = music_markov_chain.getNextState(current_group_of_notes);
+		findMaxDuration(current_group_of_notes,curr_duration);
+		addNotesToMedi(current_group_of_notes);
+	}
 }
+
+void MusyGen::addNoteToMedi(const Note* note){
+	bool found_track = false;
+	int trackcount = generated_midifile.getTrackCount();
+	for (int tracknr = 0; tracknr<trackcount; tracknr++){
+		if (generated_midifile[tracknr].getEvent(0).getP1() == note->instrument ){
+			found_track = true;
+
+		}
+	}
+}
+
+void MusyGen::addNotesToMedi(std::vector<Note*> notes){
+	for (const Note* note : notes){
+		addNoteToMedi(note);
+	}
+}
+
+void MusyGen::findMaxDuration(const std::vector< Note*> notes, double& max){
+ 	double current_dur = max;
+	for (const Note* note : notes){
+		max = std::max((current_dur+note->duration),max);
+	}
+}
+
+void MusyGen::changeVolume(const int _volume)
+{
+	volume = _volume;
+}
+
+void MusyGen::volumeArrow(const bool up)
+{
+	if (up){
+		volume +=5;
+	}
+	else{
+		volume -=5;
+	}
+}
+
 
 void MusyGen::playMusicInfinitly()
 {

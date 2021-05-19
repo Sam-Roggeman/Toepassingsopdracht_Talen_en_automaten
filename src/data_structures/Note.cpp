@@ -9,7 +9,7 @@ Note::Note()
 	instrument = 0;
 }
 
-Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
+Note::Note(int _key, int _velocity, double _duration, double _next_note_delay,
 		int _instrument)
 {
 	key = _key;

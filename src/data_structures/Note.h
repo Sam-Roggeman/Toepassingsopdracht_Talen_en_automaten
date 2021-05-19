@@ -14,7 +14,7 @@ public:
 	int instrument;
 
 	Note();
-	Note(int _key, int _velocity, int _duration, int _next_note_delay,
+	Note(int _key, int _velocity, double _duration, double _next_note_delay,
 			int _instrument);
 	explicit Note(std::string note_string);
 
