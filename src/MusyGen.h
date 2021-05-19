@@ -5,6 +5,7 @@
 #include "../libs/midifile/include/MidiFile.h"
 #include "data_structures/Note.h"
 #include "data_structures/MarkovChain.hpp"
+#include "../libs/midifile/include/RtMidi.h"
 
 class MusyGen
 {
@@ -22,6 +23,8 @@ public:
 
     void generateMusic(unsigned int duration);
     void playMusicInfinitly();
+    void changeVolume(const int _volume);
+    void volumeArrow(const bool up);
 
 private:
 	void trainMarkovModel(const std::vector<std::vector<Note>>& notes);

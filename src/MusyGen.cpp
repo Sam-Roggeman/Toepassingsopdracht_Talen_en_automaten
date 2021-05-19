@@ -69,6 +69,10 @@ void MusyGen::generateMusic(unsigned int duration)
 void MusyGen::playMusicInfinitly()
 {
 
+    bool playing = true;
+    while (playing){
+
+    }
 }
 
 void MusyGen::trainMarkovModel(const std::vector<std::vector<Note>>& notes)

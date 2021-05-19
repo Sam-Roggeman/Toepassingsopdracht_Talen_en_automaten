@@ -3,8 +3,7 @@
 Note::Note()
 {
 	key = 0;
-	start_velocity = 0;
-	end_velocity = 0;
+	velocity = 0;
 	duration = 0;
 	next_note_delay = 0;
 	instrument = 0;
@@ -15,8 +14,7 @@ Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
 		int _instrument)
 {
 	key = _key;
-	start_velocity = _start_velocity;
-	end_velocity = _end_velocity;
+	velocity = _velocity;
 	duration = _duration;
 	next_note_delay = _next_note_delay;
 	instrument = _instrument;
@@ -49,10 +47,8 @@ Note::Note(std::string note_string)
 
 		if (sub_string == "key")
 			key = std::stoi(sub_string2);
-		else if (sub_string == "start_velocity")
-			start_velocity = std::stoi(sub_string2);
-		else if (sub_string == "end_velocity")
-			end_velocity = std::stoi(sub_string2);
+		else if (sub_string == "velocity")
+			velocity = std::stoi(sub_string2);
 		else if (sub_string == "duration")
 			duration = std::stoi(sub_string2);
 		else if (sub_string == "next_note_delay")
@@ -71,13 +67,11 @@ std::string Note::toString() const
 	std::string note_string;
 
 	note_string += "key: " + std::to_string(key);
-	note_string += ", start_velocity: " + std::to_string(start_velocity);
-	note_string += ", end_velocity: " + std::to_string(end_velocity);
+	note_string += ", velocity: " + std::to_string(velocity);
 	note_string += ", duration: " + std::to_string(duration);
 	note_string += ", next_note_delay: " + std::to_string(next_note_delay);
 	note_string += ", tempo: " + std::to_string(tempo);
 	note_string += ", instrument: " + std::to_string(instrument);
-	note_string += ", time_stamp: " + std::to_string(time_stamp);
 
 	return note_string;
 }
@@ -85,11 +79,9 @@ std::string Note::toString() const
 bool Note::operator==(const Note& other_note) const
 {
 	return (key == other_note.key
-			&& start_velocity == other_note.start_velocity
-			&& end_velocity == other_note.end_velocity
+			&& velocity == other_note.velocity
 			&& duration == other_note.duration
 			&& next_note_delay == other_note.next_note_delay
-			&& tempo == other_note.tempo
-			&& instrument == other_note.instrument
-			&& time_stamp == other_note.time_stamp);
+//			&& tempo == other_note.tempo
+			&& instrument == other_note.instrument);
 }
