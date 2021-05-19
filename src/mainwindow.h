@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <string>
 #include "MusyGen.h"
+
 namespace Ui {
 class Mainwindow;
 }
@@ -22,8 +23,11 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_stackedWidget_currentChanged(int arg1);
+
 private:
     Ui::Mainwindow *ui;
+
 };
 
 #endif // MAINWINDOW_H
