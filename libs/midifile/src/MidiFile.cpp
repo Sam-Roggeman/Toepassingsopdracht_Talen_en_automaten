@@ -473,8 +473,8 @@ bool MidiFile::readSmf(std::istream& input) {
 
 	m_theTimeState = TIME_STATE_ABSOLUTE;
 
-	// The original order of the MIDI events is marked with an enumeration which
-	// allows for reconstruction of the order when merging/splitting tracks to/from
+	// The original markov_order of the MIDI events is marked with an enumeration which
+	// allows for reconstruction of the markov_order when merging/splitting tracks to/from
 	// a type-0 configuration.
 	markSequence();
 
@@ -821,7 +821,7 @@ void MidiFile::removeEmpties(void) {
 //
 // MidiFile::markSequence -- Assign a sequence serial number to
 //   every MidiEvent in every track in the MIDI file.  This is
-//   useful if you want to preseve the order of MIDI messages in
+//   useful if you want to preseve the markov_order of MIDI messages in
 //   a track when they occur at the same tick time.  Particularly
 //   for use with joinTracks() or sortTracks().  markSequence will
 //   be done automatically when a MIDI file is read, in case the
@@ -2319,9 +2319,9 @@ void MidiFile::setMillisecondTicks(void) {
 
 //////////////////////////////
 //
-// MidiFile::sortTrack -- Sort the specified track in tick order.
+// MidiFile::sortTrack -- Sort the specified track in tick markov_order.
 //    If the MidiEvent::seq variables have been filled in with
-//    a sequence value, this will preserve the order of the
+//    a sequence value, this will preserve the markov_order of the
 //    events that occur at the same tick time before the sort
 //    was done.
 //
@@ -2821,7 +2821,7 @@ ulong MidiFile::readVLValue(std::istream& input) {
 //////////////////////////////
 //
 // MidiFile::unpackVLV -- converts a VLV value to an unsigned long value.
-//     The bytes a, b, c, d, e are in big-endian order (the order they would
+//     The bytes a, b, c, d, e are in big-endian markov_order (the markov_order they would
 //     be read out of the MIDI file).
 // default values: a = b = c = d = 0;
 //
@@ -2953,8 +2953,8 @@ int MidiFile::secondsearch(const void* A, const void* B) {
 //////////////////////////////
 //
 // MidiFile::readLittleEndian4Bytes -- Read four bytes which are in
-//      little-endian order (smallest byte is first).  Then flip
-//      the order of the bytes to create the return value.
+//      little-endian markov_order (smallest byte is first).  Then flip
+//      the markov_order of the bytes to create the return value.
 //
 
 ulong MidiFile::readLittleEndian4Bytes(std::istream& input) {
@@ -2972,8 +2972,8 @@ ulong MidiFile::readLittleEndian4Bytes(std::istream& input) {
 //////////////////////////////
 //
 // MidiFile::readLittleEndian2Bytes -- Read two bytes which are in
-//       little-endian order (smallest byte is first).  Then flip
-//       the order of the bytes to create the return value.
+//       little-endian markov_order (smallest byte is first).  Then flip
+//       the markov_order of the bytes to create the return value.
 //
 
 ushort MidiFile::readLittleEndian2Bytes(std::istream& input) {

@@ -23,13 +23,14 @@ class MarkovChain
 	};
 
 	std::set<State*> states;
+	std::ostream& error_stream = std::cerr;
 
 public:
 	MarkovChain() = default;
 
 	~MarkovChain()
 	{
-		for (auto& state : states) delete state;
+		clear();
 	}
 
 	void addState(const T& data)
@@ -114,12 +115,23 @@ public:
 		return result;
 	}
 
-	bool stateExists(const T& data)
+	std::vector<T> getAllStates() const
 	{
-		return getState(data);
+		std::vector<T> all_data;
+
+		for (const auto& state : states)
+			all_data.push_back(state->data);
+
+		return all_data;
 	}
 
-	bool isLegal()
+	[[nodiscard]] bool stateExists(const T& data) const
+	{
+		for (const auto state : states) if (state->data == data) return true;
+		return false;
+	}
+
+	[[nodiscard]] bool isLegal() const
 	{
 		for (const auto& state : states)
 		{
@@ -133,6 +145,46 @@ public:
 			if (std::abs(1 - sum_of_probabilities) > 0.00001) return false;
 		}
 		return true;
+	}
+
+	[[nodiscard]] bool empty() const
+	{
+		return states.empty();
+	}
+
+	void clear()
+	{
+		for (auto& state : states) delete state;
+	}
+
+	MarkovChain<T>& operator=(MarkovChain<T> other)
+	{
+		clear();
+
+		for (const auto& other_state : other.states)
+		{
+			State* new_state = new State(other_state->data);
+		}
+
+		for (const auto& other_state : other.states)
+		{
+			State* current_state = getState(other_state->data);
+
+			for (const auto& transition : other_state->transitions)
+			{
+				double probability = transition.first;
+
+				for (const auto& transition_other_state : transition.second)
+				{
+					if (current_state->transitions[probability].empty())
+						current_state->transitions[probability] = { getState(transition_other_state->data) };
+					else
+						current_state->transitions[probability].insert(getState(transition_other_state->data));
+				}
+			}
+		}
+
+		return *this;
 	}
 
 private:

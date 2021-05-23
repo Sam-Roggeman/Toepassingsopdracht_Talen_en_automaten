@@ -9,7 +9,7 @@ Note::Note()
 	instrument = 0;
 }
 
-Note::Note(int _key, int _velocity, double _duration, double _next_note_delay,
+Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
 		int _instrument)
 {
 	key = _key;
@@ -51,8 +51,6 @@ Note::Note(std::string note_string)
 			duration = std::stoi(sub_string2);
 		else if (sub_string == "next_note_delay")
 			next_note_delay = std::stoi(sub_string2);
-//		else if (sub_string == "tempo")
-//			tempo = std::stoi(sub_string2);
 		else if (sub_string == "instrument")
 		        instrument = std::stoi(sub_string2);
 			instrument = std::stoi(sub_string2);
@@ -67,7 +65,6 @@ std::string Note::toString() const
 	note_string += ", velocity: " + std::to_string(velocity);
 	note_string += ", duration: " + std::to_string(duration);
 	note_string += ", next_note_delay: " + std::to_string(next_note_delay);
-//	note_string += ", tempo: " + std::to_string(tempo);
 	note_string += ", instrument: " + std::to_string(instrument);
 
 	return note_string;
@@ -75,10 +72,35 @@ std::string Note::toString() const
 
 bool Note::operator==(const Note& other_note) const
 {
-	return (key == other_note.key
-			&& velocity == other_note.velocity
-			&& duration == other_note.duration
-			&& next_note_delay == other_note.next_note_delay
-//			&& tempo == other_note.tempo
-			&& instrument == other_note.instrument);
+	return std::tie(this->key, this->duration, this->instrument, this->velocity, this->next_note_delay) ==
+		   std::tie(other_note.key, other_note.duration, other_note.instrument, other_note.velocity,
+				   other_note.next_note_delay);
+}
+
+bool Note::operator<(const Note& other_note) const
+{
+	return std::tie(this->key, this->duration, this->instrument, this->velocity, this->next_note_delay) <
+		   std::tie(other_note.key, other_note.duration, other_note.instrument, other_note.velocity,
+				   other_note.next_note_delay);
+}
+
+bool Note::operator<=(const Note& other_note) const
+{
+	return std::tie(this->key, this->duration, this->instrument, this->velocity, this->next_note_delay) <=
+		   std::tie(other_note.key, other_note.duration, other_note.instrument, other_note.velocity,
+				   other_note.next_note_delay);
+}
+
+bool Note::operator>(const Note& other_note) const
+{
+	return std::tie(this->key, this->duration, this->instrument, this->velocity, this->next_note_delay) >
+		   std::tie(other_note.key, other_note.duration, other_note.instrument, other_note.velocity,
+				   other_note.next_note_delay);
+}
+
+bool Note::operator>=(const Note& other_note) const
+{
+	return std::tie(this->key, this->duration, this->instrument, this->velocity, this->next_note_delay) >=
+		   std::tie(other_note.key, other_note.duration, other_note.instrument, other_note.velocity,
+				   other_note.next_note_delay);
 }

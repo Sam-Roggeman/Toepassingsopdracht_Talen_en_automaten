@@ -6,38 +6,48 @@
 #include "data_structures/Note.h"
 #include "data_structures/MarkovChain.hpp"
 #include "data_structures/VariableMarkovChain.hpp"
-#include "../libs/midifile/include/RtMidi.h"
+#include <iomanip>
+//#include "../libs/midifile/include/RtMidi.h"
 
 class MusyGen
 {
-    MarkovChain<std::vector<Note*>> music_markov_chain;
-    unsigned int order = 1;
-    smf::MidiFile input_midifile;
-    smf::MidiFile generated_midifile;
-    int volume = 50;
+public:
+	smf::MidiFile input_midifile;
+	std::map<int, std::vector<Note>> notes;
+	int tracks = 0;
+	int TPQ = 0;
+	std::map<int, int> instrument_to_track_map;
+	double tempo = 0;
+
+	MarkovChain<std::vector<Note>> music_markov_chain;
+	smf::MidiFile generated_midifile;
+
+	unsigned int markov_order = 1;
+	int volume = 50;
 
 public:
-    MusyGen() = default;
+	MusyGen();
 
-    void importMidiFile(const std::string& filename);
-    void exportMidiFile(const std::string& filename);
+	void importMidiFile(const std::string& filename);
 
-    void generateMusic(unsigned int duration);
-    void playMusicInfinitly();
-    void changeVolume(const int _volume);
-    void volumeArrow(const bool up);
+	void exportMidiFile(const std::string& filename);
+
+	void setMarkovOrder(unsigned int _markov_order);
+
+	void trainMarkovModel();
+
+	void generateMusic(double duration);
+
+	void playMusicInfinitly();
+
+	void changeVolume(int _volume);
+
+	void volumeArrow(bool up);
 
 private:
-	void trainMarkovModel(const std::map<double, std::vector<Note*>>& notes);
+	static int findMaxDuration(const std::vector<Note>& note_group);
 
-
-
-	void findMaxDuration(const std::vector<Note*> notes, double& max);
-
-
-	void addNotesToMedi(std::vector<Note*>);
-
-	void addNoteToMedi(const Note*);
+	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
 };
 
 

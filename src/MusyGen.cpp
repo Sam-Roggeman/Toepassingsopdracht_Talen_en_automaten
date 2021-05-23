@@ -1,172 +1,101 @@
+#include <cmath>
 #include "MusyGen.h"
 
 
 void MusyGen::importMidiFile(const std::string& filename)
 {
-	std::map<double, std::vector<Note*>> notes;
+	input_midifile.clear();
+	notes.clear();
+	instrument_to_track_map.clear();
 
 	input_midifile.read("../input_files/midi/" + filename + ".mid");
+	input_midifile.absoluteTicks();
 	input_midifile.doTimeAnalysis();
 	input_midifile.linkNotePairs();
+	TPQ = input_midifile.getTicksPerQuarterNote();
 
-	int tracks = input_midifile.getTrackCount();
+	tracks = input_midifile.getTrackCount();
 
-	// todo fix gangnam style
+	// todo: fix gangnam style
 	if (tracks == 1)
 	{
 		input_midifile.splitTracks();
 	}
 
+	// tempo
+	for (int event = 0; event < input_midifile[0].size(); event++)
+	{
+		if (input_midifile[0][event].isTempo())
+		{
+			tempo = input_midifile[0][event].getTempoBPM();
+			continue;
+		}
+	}
+
 	for (int track = 1; track < tracks; track++)
 	{
-//		std::cout << "Track " << track << std::endl << "**************************" << std::endl;
-
-		int instrument = 0;
+		// todo standard values for instrument and tempo
 		// instrument
+		int instrument = 0;
 		for (int event = 0; event < input_midifile[track].size(); event++)
 		{
 			if (input_midifile[track][event].isTimbre())
 			{
-//				std::cout << "Instrument: " << input_midifile[track][event].getP1() << std::endl;
 				instrument = input_midifile[track][event].getP1();
+				instrument_to_track_map[instrument] = track;
+				continue;
 			}
 		}
 
-		double current_note_group_seconds = 0;
+		int current_note_group_ticks = 0;
 		bool is_first_note = true;
 		for (int event = 0; event < input_midifile[track].size(); event++)
 		{
 			if (input_midifile[track][event].isNoteOn())
 			{
-//				std::cout << input_midifile[track][event].getTickDuration() << " NoteOn:  " << input_midifile[track][event].getKeyNumber() << ", "
-//						  << input_midifile[track][event].getDurationInSeconds() << std::endl;
-
-				Note* note = new Note(input_midifile[track][event].getKeyNumber(), input_midifile[track][event].getVelocity(),
-						input_midifile[track][event].getDurationInSeconds(), 0,
+				Note note(input_midifile[track][event].getKeyNumber(),
+						input_midifile[track][event].getVelocity(),
+						input_midifile[track][event].getTickDuration(), 0,
 						instrument);
 
-				if (!is_first_note && input_midifile[track][event].seconds != current_note_group_seconds)
+				if (!is_first_note && input_midifile[track][event].tick != current_note_group_ticks)
 				{
-					double delay = input_midifile[track][event].seconds - current_note_group_seconds;
-					for (const auto& note_ : notes[current_note_group_seconds])
-						note_->next_note_delay = delay;
-					current_note_group_seconds = input_midifile[track][event].seconds;
+					int delay = input_midifile[track][event].tick - current_note_group_ticks;
+					for (auto& note_ : notes[current_note_group_ticks])
+						note_.next_note_delay = delay;
+					current_note_group_ticks = input_midifile[track][event].tick;
 				}
 				else
 				{
-					current_note_group_seconds = input_midifile[track][event].seconds;
+					current_note_group_ticks = input_midifile[track][event].tick;
 				}
 
 				is_first_note = false;
-				notes[input_midifile[track][event].seconds].push_back(note);
+				notes[input_midifile[track][event].tick].push_back(note);
 			}
-//			if (input_midifile[track][event].isNoteOff())
-//			{
-//				std::cout << "NoteOff: " << input_midifile[track][event].getKeyNumber() << ", "
-//						  << input_midifile[track][event].getDurationInSeconds() << std::endl;
-//			}
 		}
 	}
-
-	unsigned int total_bytes = 0;
-
-	for (const auto& note_group : notes)
-	{
-		total_bytes += sizeof(note_group.first);
-
-		for (const auto& note : note_group.second)
-		{
-			total_bytes += sizeof(*note);
-		}
-	}
-
-	std::cout << "Total bytes ram " << total_bytes << std::endl;
-
-	std::cout.precision(10);
-	std::cout << "Total mb ram: " << (double)total_bytes / 1048576 << std::endl;
-	std::cout << "Total gb ram: " << (double)total_bytes / 1073741824 << std::endl;
-
-	trainMarkovModel(notes);
 }
 
 void MusyGen::exportMidiFile(const std::string& filename)
 {
-	std::ofstream outputfile("output.mid");
-	outputfile << generated_midifile;
+	std::ofstream outputfile(filename + ".mid");
+	generated_midifile.write(outputfile);
 	outputfile.close();
 }
 
-void MusyGen::generateMusic(unsigned int duration)
+void MusyGen::setMarkovOrder(unsigned int _markov_order)
 {
-	std::vector<Note*> current_group_of_notes = music_markov_chain.getRandomState();
-	double curr_duration = 0;
-	findMaxDuration(current_group_of_notes,curr_duration);
-	addNotesToMedi(current_group_of_notes);
-
-	while (curr_duration<(double) duration){
-		current_group_of_notes = music_markov_chain.getNextState(current_group_of_notes);
-		findMaxDuration(current_group_of_notes,curr_duration);
-		addNotesToMedi(current_group_of_notes);
-	}
+	markov_order = _markov_order;
 }
 
-void MusyGen::addNoteToMedi(const Note* note){
-	bool found_track = false;
-	int trackcount = generated_midifile.getTrackCount();
-	for (int tracknr = 0; tracknr<trackcount; tracknr++){
-		if (generated_midifile[tracknr].getEvent(0).getP1() == note->instrument ){
-			found_track = true;
-
-		}
-	}
-}
-
-void MusyGen::addNotesToMedi(std::vector<Note*> notes){
-	for (const Note* note : notes){
-		addNoteToMedi(note);
-	}
-}
-
-void MusyGen::findMaxDuration(const std::vector< Note*> notes, double& max){
- 	double current_dur = max;
-	for (const Note* note : notes){
-		max = std::max((current_dur+note->duration),max);
-	}
-}
-
-void MusyGen::changeVolume(const int _volume)
+void MusyGen::trainMarkovModel()
 {
-	volume = _volume;
-}
+	music_markov_chain.clear();
 
-void MusyGen::volumeArrow(const bool up)
-{
-	if (up){
-		volume +=5;
-	}
-	else{
-		volume -=5;
-	}
-}
-
-
-void MusyGen::playMusicInfinitly()
-{
-
-//	bool playing = true;
-//	while (playing)
-//	{
-//
-//	}
-}
-
-void MusyGen::trainMarkovModel(const std::map<double, std::vector<Note*>>& notes)
-{
-	MarkovChain<std::vector<Note*>> markov_chain;
-
-	if (order == 1)
+	if (markov_order == 1)
 	{
-		std::map<std::vector<Note*>, std::map<std::vector<Note*>, int>> note_group_map;
+		std::map<std::vector<Note>, std::map<std::vector<Note>, int>> note_group_map;
 
 		for (auto note_group = notes.begin(); note_group != notes.end(); note_group++)
 		{
@@ -186,44 +115,142 @@ void MusyGen::trainMarkovModel(const std::map<double, std::vector<Note*>>& notes
 		// first and last
 		if (notes.size() > 2)
 		{
-			if (note_group_map[notes.rbegin()->second].find(notes.begin()->second) != note_group_map[notes.rbegin()->second].end())
+			if (note_group_map[notes.rbegin()->second].find(notes.begin()->second) !=
+				note_group_map[notes.rbegin()->second].end())
 				note_group_map[notes.rbegin()->second][notes.begin()->second]++;
 			else
 				note_group_map[notes.rbegin()->second][notes.begin()->second] = 1;
 		}
 
-		for (auto& note_group : notes)
+		std::map<std::vector<Note>, int> frequencies;
+
+		for (auto& it : note_group_map)
 		{
-			for (auto& note : note_group.second)
+			if (!music_markov_chain.stateExists(it.first)) music_markov_chain.addState(it.first);
+			frequencies[it.first] = 0;
+			for (const auto& trans : it.second)
 			{
-				delete note;
+				frequencies[it.first] += trans.second;
 			}
 		}
 
-		std::map<std::vector<Note*>,int> sommen;
-
-		for (const auto &it : note_group_map){
-			if (!markov_chain.stateExists(it.first)) markov_chain.addState(it.first);
-			sommen[it.first] = 0;
-			for(const auto &trans : it.second){
-				sommen[it.first] += trans.second;
+		for (auto& it : note_group_map)
+		{
+			for (auto& trans : it.second)
+			{
+				music_markov_chain.setTransition(it.first, trans.first, ((double)trans.second / frequencies[it.first]));
 			}
 		}
 
-		for (const auto &it : note_group_map){
-			for(const auto &trans : it.second){
-				markov_chain.setTransition(it.first,trans.first,((double)trans.second/sommen[it.first]));
-			}
-		}
-
-		std::cout << "IsLegal: " << std::boolalpha << markov_chain.isLegal() << std::endl;
+		std::cout << "IsLegal: " << std::boolalpha << music_markov_chain.isLegal() << std::endl;
 	}
 	else
 	{
 		VariableMarkovChain<std::vector<Note*>> variable_markov_chain;
 
-
+		// todo: variable order Markov chain training
 
 		MarkovChain<std::vector<std::vector<Note*>>> variable_markov_chain_first = variable_markov_chain.toFirstOrder();
 	}
+}
+
+void MusyGen::generateMusic(double duration)
+{
+	if (music_markov_chain.empty())
+	{
+		std::cerr << "Error: no Markov chain model" << std::endl;
+		return;
+	}
+
+	std::map<int, std::vector<Note>> generated_notes;
+
+	std::vector<Note> current_group_of_notes = music_markov_chain.getRandomState();
+	int curr_duration = 0;
+	generated_notes[curr_duration] = current_group_of_notes;
+
+	curr_duration += findMaxDuration(current_group_of_notes);
+
+	while (curr_duration < duration)
+	{
+		current_group_of_notes = music_markov_chain.getNextState(current_group_of_notes);
+		generated_notes[curr_duration] = current_group_of_notes;
+
+		curr_duration += findMaxDuration(current_group_of_notes);
+	}
+
+	notesToMidi(generated_notes);
+}
+
+int MusyGen::findMaxDuration(const std::vector<Note>& note_group)
+{
+	int max_duration = 0;
+	for (auto& note : note_group)
+		max_duration = std::max(note.duration, max_duration);
+	return max_duration;
+}
+
+void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_notes)
+{
+	generated_midifile.clear();
+
+	generated_midifile.setTicksPerQuarterNote(TPQ);
+
+	// adds tracks with notes
+	generated_midifile.addTracks(tracks - 1);
+
+	// adds timbre to tracks
+	for (const auto& instrument_track : instrument_to_track_map)
+	{
+		generated_midifile.addTimbre(instrument_track.second, 0, 0, instrument_track.first);
+	}
+
+	// adds tempo
+	generated_midifile.addTempo(0, 0, tempo);
+	generated_midifile.addTrackName(0, 0, "Trackname");
+
+	for (const auto& note_group : generated_notes)
+	{
+		for (const auto& note : note_group.second)
+		{
+			int start_tick = note_group.first;
+			int end_tick = note_group.first + note.duration;
+
+			int track_nr = instrument_to_track_map[note.instrument];
+			generated_midifile.addNoteOn(track_nr, start_tick, 0, note.key, note.velocity);
+			generated_midifile.addNoteOff(track_nr, end_tick, 0, note.key, note.velocity);
+		}
+	}
+
+	generated_midifile.sortTracks();
+}
+
+void MusyGen::playMusicInfinitly()
+{
+//	bool playing = true;
+//	while (playing)
+//	{
+//
+//	}
+}
+
+void MusyGen::changeVolume(const int _volume)
+{
+	volume = _volume;
+}
+
+void MusyGen::volumeArrow(const bool up)
+{
+	if (up)
+	{
+		volume += 5;
+	}
+	else
+	{
+		volume -= 5;
+	}
+}
+
+MusyGen::MusyGen()
+{
+	srand((unsigned)time(nullptr));
 }

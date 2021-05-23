@@ -275,7 +275,7 @@ void MidiEventList::removeEmpties(void) {
 //   or the first note-off affects the first note-on.  Currently  the
 //   first note-off affects the last note-on, but both methods could
 //   be implemented with user selectability.  The current state of the
-//   track is assumed to be in time-sorted order.  Returns the number
+//   track is assumed to be in time-sorted markov_order.  Returns the number
 //   of linked notes (note-on/note-off pairs).
 //
 
@@ -451,7 +451,7 @@ void MidiEventList::clearSequence(void) {
 //
 // MidiEventList::markSequence -- Assign a sequence serial number to
 //   every MidiEvent in the event list.  This is useful if you want
-//   to preseve the order of MIDI messages in a track when they occur
+//   to preseve the markov_order of MIDI messages in a track when they occur
 //   at the same tick time.  Particularly for use with joinTracks()
 //   or sortTracks().  markSequence will be done automatically when
 //   a MIDI file is read, in case the ordering of events occuring at

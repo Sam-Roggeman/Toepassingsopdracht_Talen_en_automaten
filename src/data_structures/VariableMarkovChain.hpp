@@ -36,7 +36,7 @@ public:
 
 	~VariableMarkovChain()
 	{
-		for (auto& state : states) delete state;
+		clear();
 	}
 
 	void setOrder(unsigned int _order)
@@ -77,7 +77,7 @@ public:
 
 		if (previous_data_state_1.size() + 1 > order)
 		{
-			error_stream << "Error: VariableMarkovChain previous_data_vec is bigger than the order" << std::endl;
+			error_stream << "Error: VariableMarkovChain previous_data_vec is bigger than the markov_order" << std::endl;
 			return;
 		}
 		std::vector<State*> previous_states;
@@ -116,7 +116,7 @@ public:
 	{
 		if (previous_data_vec.size() + 1 > order)
 		{
-			error_stream << "Error: VariableMarkovChain previous_data_vec is bigger than the order" << std::endl;
+			error_stream << "Error: VariableMarkovChain previous_data_vec is bigger than the markov_order" << std::endl;
 			return (*states.end())->data;
 		}
 
@@ -221,13 +221,23 @@ public:
 			}
 		}
 
-
 		return first_order_markov_chain;
 	}
 
-	bool stateExists(const T& data)
+	std::vector<T> getAllStates() const
 	{
-		return getState(data);
+		std::vector<T> all_data;
+
+		for (const auto& state : states)
+			all_data.push_back(state->data);
+
+		return all_data;
+	}
+
+	[[nodiscard]] bool stateExists(const T& data) const
+	{
+		for (const auto state : states) if (state->data == data) return true;
+		return false;
 	}
 
 	bool isLegal()
@@ -239,7 +249,7 @@ public:
 			{
 				if (previous_data.first.size() + 1 > order)
 				{
-					error_stream << "Error: VariableMarkovChain previous_data_vec is bigger than the order"
+					error_stream << "Error: VariableMarkovChain previous_data_vec is bigger than the markov_order"
 								 << std::endl;
 					return false;
 				}
@@ -255,6 +265,18 @@ public:
 		}
 		return true;
 	}
+
+	[[nodiscard]] bool empty() const
+	{
+		return states.empty();
+	}
+
+	void clear()
+	{
+		for (auto& state : states) delete state;
+	}
+
+	// todo: implement operator= overloader
 
 private:
 	State* getState(const T& data)

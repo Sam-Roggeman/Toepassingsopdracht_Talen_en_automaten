@@ -2,6 +2,7 @@
 #define MUSYGEN_NOTE_H
 
 
+#include <tuple>
 #include <string>
 
 class Note
@@ -9,18 +10,22 @@ class Note
 public:
 	int key;
 	int velocity;
-	double duration;
-	double next_note_delay;
+	int duration;
+	int next_note_delay;
 	int instrument;
 
 	Note();
-	Note(int _key, int _velocity, double _duration, double _next_note_delay,
+	Note(int _key, int _velocity, int _duration, int _next_note_delay,
 			int _instrument);
 	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;
+	bool operator<(const Note& other_note) const;
+	bool operator<=(const Note& other_note) const;
+	bool operator>(const Note& other_note) const;
+	bool operator>=(const Note& other_note) const;
 
-	std::string toString() const;
+	[[nodiscard]] std::string toString() const;
 };
 
 

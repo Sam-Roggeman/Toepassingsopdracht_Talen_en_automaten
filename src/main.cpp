@@ -87,19 +87,18 @@ int main(int argc, char* argv[])
 //    w.show();
 //    return a.exec();
 
-	srand((unsigned)time(nullptr));
-
 //	smf::MidiFile midifile;
 //	std::string midi_file_name = "twinkle_twinkle";
 //	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
 //	midifile.doTimeAnalysis();
 //	midifile.linkNotePairs();
-
-	MusyGen sys;
-	sys.importMidiFile("twinkle_twinkle");
+//
+//	std::ofstream outputfile("twinkle_twinkle_export2.mid");
+//	midifile.write(outputfile);
+//	outputfile.close();
 
 // 	std::cout << midifile << std::endl;
-
+//
 //	int tracks = midifile.getTrackCount();
 //	std::cout << "TPQ: " << midifile.getTicksPerQuarterNote() << std::endl;
 //	if (tracks > 1) std::cout << "TRACKS: " << tracks << std::endl;
@@ -118,6 +117,14 @@ int main(int argc, char* argv[])
 //			std::cout << std::endl;
 //		}
 //	}
+
+	MusyGen sys;
+	sys.importMidiFile("Mexico national anthem");
+	sys.trainMarkovModel();
+	sys.generateMusic(150000);
+
+	std::cout << sys.generated_midifile << std::endl;
+	sys.exportMidiFile("samplesong3");
 
 //	Note note1(0, 1, 2, 3, 4, 5, 6, 7);
 //	Note note2(50, 1, 2, 3, 4, 5, 6, 7);
