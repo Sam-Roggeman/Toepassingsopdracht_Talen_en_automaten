@@ -31,6 +31,8 @@ set(PROJECT_SOURCES
         libs/midifile/src/MidiMessage.cpp
         libs/midifile/src/Options.cpp
 
+#        libs/RTMidi/include/RtMidi.h
+
         src/data_structures/MarkovChain.hpp
         src/data_structures/VariableMarkovChain.hpp
         src/data_structures/Note.cpp

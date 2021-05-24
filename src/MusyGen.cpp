@@ -15,7 +15,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 	TPQ = input_midifile.getTicksPerQuarterNote();
 
 	tracks = input_midifile.getTrackCount();
-
+    int count = 0;
 	// todo: add support for midi files of which all info is in track 0
 	if (tracks == 1)
 	{
@@ -42,8 +42,10 @@ void MusyGen::importMidiFile(const std::string& filename)
 			if (input_midifile[track][event].isTimbre())
 			{
 				instrument = input_midifile[track][event].getP1();
+				std::cout << instrument << std::endl;
 				instrument_to_track_map[instrument] = track;
-				continue;
+                count++;
+				break;
 			}
 		}
 
@@ -75,6 +77,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 			}
 		}
 	}
+	std::cout <<std::endl<<count<<std::endl;
 }
 
 void MusyGen::exportMidiFile(const std::string& filename)
@@ -162,7 +165,7 @@ void MusyGen::trainMarkovModel()
 
 void MusyGen::generateMusic(double duration)
 {
-	// todo: convert seconds to ticks
+	double duration = SecondsToTicks(duration_in_seconds);
 
 	if (music_markov_chain.empty())
 	{
@@ -216,29 +219,25 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	generated_midifile.addTempo(0, 0, tempo);
 	generated_midifile.addTrackName(0, 0, "Trackname");
 
-	for (const auto& note_group : notes)
-	{
-		for (const auto& note : note_group.second)
-		{
-			int start_tick = note_group.first;
-			int end_tick = note_group.first + note.duration;
+	for (const auto& note_group : generated_notes) {
+        for (const auto &note : note_group.second) {
+            int start_tick = note_group.first;
+            int end_tick = note_group.first + note.duration;
 
-			int track_nr = instrument_to_track_map[note.instrument];
-			generated_midifile.addNoteOn(track_nr, start_tick, 0, note.key, note.velocity);
-			generated_midifile.addNoteOff(track_nr, end_tick, 0, note.key, note.velocity);
-		}
-	}
-
+            int track_nr = instrument_to_track_map[note.instrument];
+            generated_midifile.addNoteOn(track_nr, start_tick, 0, note.key, note.velocity);
+            generated_midifile.addNoteOff(track_nr, end_tick, 0, note.key, note.velocity);
+        }
+    }
 	generated_midifile.sortTracks();
 }
 
 void MusyGen::playMusicInfinitly()
 {
-//	bool playing = true;
-//	while (playing)
-//	{
-//
-//	}
+//    while ()
+	{
+
+	}
 }
 
 void MusyGen::changeVolume(const int _volume)
