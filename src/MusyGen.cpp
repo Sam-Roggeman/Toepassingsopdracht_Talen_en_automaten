@@ -33,7 +33,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 		if (input_midifile[0][event].isTempo())
 		{
 			tempo = input_midifile[0][event].getTempoBPM();
-			continue;
+			break;
 		}
 	}
 
@@ -52,6 +52,10 @@ void MusyGen::importMidiFile(const std::string& filename)
                 count++;
 				break;
 			}
+			if (input_midifile[track][event].isInstrumentName())
+            {
+//			    std::cout << input_midifile[track][event].
+            }
 		}
 
 		int current_note_group_ticks = 0;
@@ -164,6 +168,8 @@ void MusyGen::trainMarkovModel()
 
 		// todo: variable order Markov chain training
 
+
+
 		MarkovChain<std::vector<std::vector<Note*>>> variable_markov_chain_first = variable_markov_chain.toFirstOrder();
 	}
 }
@@ -176,7 +182,7 @@ int MusyGen::SecondsToTicks(double duration)
     return total_ticks;
 }
 
-void MusyGen::generateMusic(double duration)
+void MusyGen::generateMusic(double duration_in_seconds)
 {
 	double duration = SecondsToTicks(duration_in_seconds);
 

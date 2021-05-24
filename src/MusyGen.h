@@ -38,7 +38,7 @@ public:
 
 	void trainMarkovModel();
 
-	void generateMusic(double duration);
+	void generateMusic(double duration_in_seconds);
 
 	void playMusicInfinitly();
 
