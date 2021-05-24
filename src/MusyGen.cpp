@@ -16,7 +16,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 
 	tracks = input_midifile.getTrackCount();
 
-	// todo: fix gangnam style
+	// todo: add support for midi files of which all info is in track 0
 	if (tracks == 1)
 	{
 		input_midifile.splitTracks();
@@ -34,7 +34,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 
 	for (int track = 1; track < tracks; track++)
 	{
-		// todo standard values for instrument and tempo
+		// todo: fix instruments
 		// instrument
 		int instrument = 0;
 		for (int event = 0; event < input_midifile[track].size(); event++)
@@ -82,6 +82,12 @@ void MusyGen::exportMidiFile(const std::string& filename)
 	std::ofstream outputfile(filename + ".mid");
 	generated_midifile.write(outputfile);
 	outputfile.close();
+}
+
+void MusyGen::exportInputMidiFile(const std::string& filename)
+{
+	notesToMidi(notes);
+	exportMidiFile(filename);
 }
 
 void MusyGen::setMarkovOrder(unsigned int _markov_order)
@@ -156,6 +162,8 @@ void MusyGen::trainMarkovModel()
 
 void MusyGen::generateMusic(double duration)
 {
+	// todo: convert seconds to ticks
+
 	if (music_markov_chain.empty())
 	{
 		std::cerr << "Error: no Markov chain model" << std::endl;
@@ -208,7 +216,7 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	generated_midifile.addTempo(0, 0, tempo);
 	generated_midifile.addTrackName(0, 0, "Trackname");
 
-	for (const auto& note_group : generated_notes)
+	for (const auto& note_group : notes)
 	{
 		for (const auto& note : note_group.second)
 		{

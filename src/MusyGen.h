@@ -32,6 +32,8 @@ public:
 
 	void exportMidiFile(const std::string& filename);
 
+	void exportInputMidiFile(const std::string& filename);
+
 	void setMarkovOrder(unsigned int _markov_order);
 
 	void trainMarkovModel();

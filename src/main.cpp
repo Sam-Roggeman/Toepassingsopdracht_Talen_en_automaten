@@ -119,12 +119,12 @@ int main(int argc, char* argv[])
 //	}
 
 	MusyGen sys;
-	sys.importMidiFile("Mexico national anthem");
+	sys.importMidiFile("plastic_love");
 	sys.trainMarkovModel();
-	sys.generateMusic(150000);
+//	sys.generateMusic(150000);
 
 	std::cout << sys.generated_midifile << std::endl;
-	sys.exportMidiFile("samplesong3");
+	sys.exportInputMidiFile("plastic_love_export");
 
 //	Note note1(0, 1, 2, 3, 4, 5, 6, 7);
 //	Note note2(50, 1, 2, 3, 4, 5, 6, 7);
