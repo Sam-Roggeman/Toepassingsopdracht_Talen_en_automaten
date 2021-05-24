@@ -17,9 +17,14 @@ void MusyGen::importMidiFile(const std::string& filename)
 	tracks = input_midifile.getTrackCount();
     int count = 0;
 	// todo: add support for midi files of which all info is in track 0
+
 	if (tracks == 1)
 	{
-		input_midifile.splitTracks();
+        for (int event = 0; event < input_midifile[0].size(); event++)
+        {
+            input_midifile[0].getEvent(event).getChannel();
+        }
+
 	}
 
 	// tempo
@@ -161,6 +166,14 @@ void MusyGen::trainMarkovModel()
 
 		MarkovChain<std::vector<std::vector<Note*>>> variable_markov_chain_first = variable_markov_chain.toFirstOrder();
 	}
+}
+
+int MusyGen::SecondsToTicks(double duration)
+{
+    double secondsPerTick = 60.0 / (tempo * TPQ);
+
+    int total_ticks= (int)(duration / secondsPerTick);
+    return total_ticks;
 }
 
 void MusyGen::generateMusic(double duration)
