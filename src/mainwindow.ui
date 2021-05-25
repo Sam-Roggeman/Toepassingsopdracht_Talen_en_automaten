@@ -19,11 +19,11 @@
      <x>0</x>
      <y>0</y>
      <width>721</width>
-     <height>581</height>
+     <height>571</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>5</number>
    </property>
    <widget class="QWidget" name="page">
     <widget class="QPushButton" name="pushButton">
@@ -117,7 +117,7 @@ p, li { white-space: pre-wrap; }
       </rect>
      </property>
      <property name="text">
-      <string>Play Infinite</string>
+      <string>Play Infinitely</string>
      </property>
     </widget>
     <widget class="QPushButton" name="SetTime">
@@ -184,12 +184,26 @@ p, li { white-space: pre-wrap; }
       <string>In seconds</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QWidget" name="page_5">
     <widget class="StopWatch" name="widget" native="true">
      <property name="geometry">
       <rect>
        <x>180</x>
-       <y>50</y>
+       <y>200</y>
        <width>331</width>
+       <height>161</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_6">
+    <widget class="StopWatch" name="widget_2" native="true">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>210</y>
+       <width>301</width>
        <height>161</height>
       </rect>
      </property>

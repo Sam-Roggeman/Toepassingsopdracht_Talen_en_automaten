@@ -42,6 +42,8 @@ private slots:
 
     void on_seconds_clicked();
 
+    void on_Infinite_clicked();
+
 private:
     Ui::Mainwindow *ui;
     QTimer * timer_ls;

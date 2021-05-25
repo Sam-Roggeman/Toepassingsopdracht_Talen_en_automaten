@@ -7,7 +7,6 @@
 
 
 #include <utility>
-
 #include "QLabel"
 #include "QHBoxLayout"
 #include "QDialog"
@@ -127,6 +126,7 @@ public slots:
         mTotalTime = 0;
         mRunning = false;
         double totaltime = (double)mSessionTime/1000;
+
     }
 
 protected:

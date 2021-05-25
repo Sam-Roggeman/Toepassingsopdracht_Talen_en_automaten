@@ -17,7 +17,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
-#include "Stopwatch.h"
+#include <stopwatch.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -40,7 +40,10 @@ public:
     QPushButton *minutes;
     QPushButton *hours;
     QPushButton *seconds;
+    QWidget *page_5;
     StopWatch *widget;
+    QWidget *page_6;
+    StopWatch *widget_2;
 
     void setupUi(QDialog *Mainwindow)
     {
@@ -49,7 +52,7 @@ public:
         Mainwindow->resize(720, 573);
         stackedWidget = new QStackedWidget(Mainwindow);
         stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
-        stackedWidget->setGeometry(QRect(0, 0, 721, 581));
+        stackedWidget->setGeometry(QRect(0, 0, 721, 571));
         page = new QWidget();
         page->setObjectName(QString::fromUtf8("page"));
         pushButton = new QPushButton(page);
@@ -95,14 +98,23 @@ public:
         seconds = new QPushButton(page_4);
         seconds->setObjectName(QString::fromUtf8("seconds"));
         seconds->setGeometry(QRect(430, 330, 93, 28));
-        widget = new StopWatch(page_4);
-        widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(180, 50, 331, 161));
         stackedWidget->addWidget(page_4);
+        page_5 = new QWidget();
+        page_5->setObjectName(QString::fromUtf8("page_5"));
+        widget = new StopWatch(page_5);
+        widget->setObjectName(QString::fromUtf8("widget"));
+        widget->setGeometry(QRect(180, 200, 331, 161));
+        stackedWidget->addWidget(page_5);
+        page_6 = new QWidget();
+        page_6->setObjectName(QString::fromUtf8("page_6"));
+        widget_2 = new StopWatch(page_6);
+        widget_2->setObjectName(QString::fromUtf8("widget_2"));
+        widget_2->setGeometry(QRect(210, 210, 301, 161));
+        stackedWidget->addWidget(page_6);
 
         retranslateUi(Mainwindow);
 
-        stackedWidget->setCurrentIndex(3);
+        stackedWidget->setCurrentIndex(5);
 
 
         QMetaObject::connectSlotsByName(Mainwindow);
@@ -125,7 +137,7 @@ public:
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Choose a markovchain order between 1 and 5.</p></body></html>", nullptr));
         confirm->setText(QCoreApplication::translate("Mainwindow", "Confirm", nullptr));
-        Infinite->setText(QCoreApplication::translate("Mainwindow", "Play Infinite", nullptr));
+        Infinite->setText(QCoreApplication::translate("Mainwindow", "Play Infinitely", nullptr));
         SetTime->setText(QCoreApplication::translate("Mainwindow", "Play for a Set Time", nullptr));
         minutes->setText(QCoreApplication::translate("Mainwindow", "In minutes", nullptr));
         hours->setText(QCoreApplication::translate("Mainwindow", "In hours", nullptr));
