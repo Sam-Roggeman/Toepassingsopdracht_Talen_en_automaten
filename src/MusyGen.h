@@ -38,7 +38,7 @@ public:
 
 	void trainMarkovModel();
 
-	void generateMusic(double duration);
+	void generateMusic(double duration_in_seconds);
 
 	void playMusicInfinitly();
 
@@ -50,6 +50,10 @@ private:
 	static int findMaxDuration(const std::vector<Note>& note_group);
 
 	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
+
+    int SecondsToTicks(double duration);
+
+    int TicksToSeconds(double ticks);
 };
 
 

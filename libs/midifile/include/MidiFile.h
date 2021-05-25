@@ -286,8 +286,12 @@ class MidiFile {
 
 		// m_linkedEventQ == True if link analysis has been done.
 		bool m_linkedEventsQ = false;
+public:
+    int getType() const;
 
-	private:
+private:
+        int type;
+
 		int        extractMidiData                 (std::istream& inputfile,
 		                                            std::vector<uchar>& array,
 		                                            uchar& runningCommand);

@@ -271,12 +271,46 @@ public:
 		return states.empty();
 	}
 
-	void clear()
-	{
-		for (auto& state : states) delete state;
-	}
+	void clear() {
+        for (auto &state : states) delete state;
+    }
 
-	// todo: implement operator= overloader
+    MarkovChain<T>& operator=(MarkovChain<T> other)
+    {
+        this->clear();
+        this->order = other.order;
+
+        for (const auto& other_state : other.states)
+        {
+            State* new_state = new State(other_state->data);
+        }
+
+        for (const auto& other_state : other.states)
+        {
+            State* current_state = getState(other_state->data);
+
+            for (const auto& previous_states_and_transitions : other_state->transitions) {
+                std::vector<State *> previous_states_other_chain = previous_states_and_transitions.first;
+                std::vector<State *> previous_states;
+
+                for (const auto &previous_state : previous_states_other_chain) {
+                    previous_states.push_back(getState(previous_state->data));
+                }
+
+                for (const auto &transition : previous_states_and_transitions.second) {
+                    double probability = transition.first;
+
+                    for (const auto &transition_other_state : transition.second) {
+                        if (current_state->transitions[previous_states][probability].empty())
+                            current_state->transitions[previous_states][probability] = {getState(transition_other_state->data)};
+                        else
+                            current_state->transitions[previous_states][probability].insert(getState(transition_other_state->data));
+                    }
+                }
+            }
+        }
+        return *this;
+    }
 
 private:
 	State* getState(const T& data)
