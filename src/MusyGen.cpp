@@ -8,11 +8,15 @@ void MusyGen::importMidiFile(const std::string& filename)
 	notes.clear();
 	instrument_to_track_map.clear();
 
-	input_midifile.read("../input_files/midi/" + filename + ".mid");
+
+    input_midifile.read("../input_files/midi/" + filename + ".mid");
 	input_midifile.absoluteTicks();
 	input_midifile.doTimeAnalysis();
 	input_midifile.linkNotePairs();
 	TPQ = input_midifile.getTicksPerQuarterNote();
+//    input_midifile.doTimeAnalysis();
+//    std::cout << input_midifile.getFileDurationInSeconds() << std::endl;
+	tempo = 120;
 
 	tracks = input_midifile.getTrackCount();
     int count = 0;
@@ -28,46 +32,59 @@ void MusyGen::importMidiFile(const std::string& filename)
 	}
 
 	// tempo
-	for (int event = 0; event < input_midifile[0].size(); event++)
-	{
-		if (input_midifile[0][event].isTempo())
-		{
-			tempo = input_midifile[0][event].getTempoBPM();
-			break;
-		}
-	}
+    for (int track = 0; track < tracks; track++) {
+        for (int event = 0; event < input_midifile[track].size(); event++) {
+            if (input_midifile[track][event].isTempo()) {
+//                std::cout << input_midifile[track][event].getTempoBPM() << std::endl;
+                tempo = input_midifile[track][event].getTempoBPM();
+            }
+        }
+    }
+
+    std::pair<int, int> trackinst;
+    std::set<std::pair<int, int>> iset;
+    for (int i=0; i<input_midifile.getTrackCount(); i++) {
+        for (int j=0; j<input_midifile[i].getEventCount(); j++) {
+            if (input_midifile[i][j].isTimbre()) {
+                trackinst.first = i;
+                trackinst.second = input_midifile[i][j].getP1();
+                iset.insert(trackinst);
+            }
+        }
+    }
+    for (auto it : iset)
+        std::cout << "Track:" << it.first << "\tInstrument:" << it.second << std::endl;
+
 
 	for (int track = 1; track < tracks; track++)
 	{
 		// todo: fix instruments
 		// instrument
 		int instrument = 0;
-		for (int event = 0; event < input_midifile[track].size(); event++)
-		{
-			if (input_midifile[track][event].isTimbre())
-			{
-				instrument = input_midifile[track][event].getP1();
-				std::cout << instrument << std::endl;
-				instrument_to_track_map[instrument] = track;
-                count++;
-				break;
-			}
-			if (input_midifile[track][event].isInstrumentName())
-            {
-//			    std::cout << input_midifile[track][event].
-            }
-		}
+//		std::cout << "track "<<track << ":" << std::endl;
+//		for (int event = 0; event < input_midifile[track].size(); event++)
+//		{
+//			if (input_midifile[track][event].isInstrumentName())
+//            {
+////			    std::cout << input_midifile[track][event].
+//            }
+//		}
 
 		int current_note_group_ticks = 0;
 		bool is_first_note = true;
 		for (int event = 0; event < input_midifile[track].size(); event++)
 		{
-			if (input_midifile[track][event].isNoteOn())
+            if (input_midifile[track][event].isTimbre())
+            {
+                instrument = input_midifile[track][event].getP1();
+//                instrument_to_track_map[instrument] = track;
+            }
+		    if (input_midifile[track][event].isNoteOn())
 			{
 				Note note(input_midifile[track][event].getKeyNumber(),
 						input_midifile[track][event].getVelocity(),
 						input_midifile[track][event].getTickDuration(), 0,
-						instrument);
+						instrument, track);
 
 				if (!is_first_note && input_midifile[track][event].tick != current_note_group_ticks)
 				{
@@ -86,7 +103,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 			}
 		}
 	}
-	std::cout <<std::endl<<count<<std::endl;
+
 }
 
 void MusyGen::exportMidiFile(const std::string& filename)
@@ -99,6 +116,10 @@ void MusyGen::exportMidiFile(const std::string& filename)
 void MusyGen::exportInputMidiFile(const std::string& filename)
 {
 	notesToMidi(notes);
+
+//  USEFULL TO SEE DURATION BUT MESSES WITH THE FILE
+//    std::cout << generated_midifile.getFileDurationInSeconds() << std::endl;
+
 	exportMidiFile(filename);
 }
 
@@ -177,7 +198,6 @@ void MusyGen::trainMarkovModel()
 int MusyGen::SecondsToTicks(double duration)
 {
     double secondsPerTick = 60.0 / (tempo * TPQ);
-
     int total_ticks= (int)(duration / secondsPerTick);
     return total_ticks;
 }
@@ -221,18 +241,22 @@ int MusyGen::findMaxDuration(const std::vector<Note>& note_group)
 
 void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_notes)
 {
-	generated_midifile.clear();
+	std::map<int,int> prev_ins_per_track;
+//	for (int track = 1; track <tracks;track++) prev_ins_per_track[track] = 0;
+
+    generated_midifile.clear();
 
 	generated_midifile.setTicksPerQuarterNote(TPQ);
 
 	// adds tracks with notes
 	generated_midifile.addTracks(tracks - 1);
 
-	// adds timbre to tracks
-	for (const auto& instrument_track : instrument_to_track_map)
-	{
-		generated_midifile.addTimbre(instrument_track.second, 0, 0, instrument_track.first);
-	}
+//	// adds timbre to tracks
+//	for (const auto& instrument_track : instrument_to_track_map)
+//	{
+//		generated_midifile.addTimbre(instrument_track.second, 0, 0, instrument_track.first);
+//		prev_ins_per_track[instrument_track.second] = instrument_track.first;
+//	}
 
 	// adds tempo
 	generated_midifile.addTempo(0, 0, tempo);
@@ -243,7 +267,17 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
             int start_tick = note_group.first;
             int end_tick = note_group.first + note.duration;
 
-            int track_nr = instrument_to_track_map[note.instrument];
+            int track_nr = note.track;
+            int ins = note.instrument;
+            if (track_nr>10){
+                track_nr =track_nr;
+            }
+
+            if (prev_ins_per_track.find(track_nr) == prev_ins_per_track.end() || ins != prev_ins_per_track[track_nr]){
+                generated_midifile.addTimbre(track_nr, start_tick-50, 0, ins);
+                prev_ins_per_track[track_nr] = ins;
+
+            }
             generated_midifile.addNoteOn(track_nr, start_tick, 0, note.key, note.velocity);
             generated_midifile.addNoteOff(track_nr, end_tick, 0, note.key, note.velocity);
         }

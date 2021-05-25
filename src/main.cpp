@@ -124,10 +124,10 @@ int main(int argc, char* argv[])
 //	sys.generateMusic(120);
 
 //	std::cout << sys.generated_midifile << std::endl;
-    std::cout << sys.input_midifile << std::endl;
-    std::cout << "#############################################################" << std::endl;
-    std::cout << sys.generated_midifile << std::endl;
-	sys.exportInputMidiFile("plastic_love_export");
+//    std::cout << sys.input_midifile << std::endl;
+//    std::cout << "#############################################################" << std::endl;
+//    std::cout << sys.generated_midifile << std::endl;
+	sys.exportInputMidiFile("plastic_love");
 
 	return 0;
 }

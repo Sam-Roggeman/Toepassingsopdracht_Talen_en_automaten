@@ -13,10 +13,11 @@ public:
 	int duration;
 	int next_note_delay;
 	int instrument;
+	int track;
 
 	Note();
 	Note(int _key, int _velocity, int _duration, int _next_note_delay,
-			int _instrument);
+			int _instrument, int _track);
 	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;

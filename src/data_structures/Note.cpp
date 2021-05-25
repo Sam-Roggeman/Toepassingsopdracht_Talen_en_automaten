@@ -7,16 +7,18 @@ Note::Note()
 	duration = 0;
 	next_note_delay = 0;
 	instrument = 0;
+	track = 0;
 }
 
 Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
-		int _instrument)
+		int _instrument, int _track)
 {
 	key = _key;
 	velocity = _velocity;
 	duration = _duration;
 	next_note_delay = _next_note_delay;
 	instrument = _instrument;
+	track = _track;
 }
 
 Note::Note(std::string note_string)

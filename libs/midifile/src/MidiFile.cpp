@@ -299,7 +299,6 @@ bool MidiFile::readSmf(std::istream& input) {
 	}
 
 	// Header parameter #1: format type
-	int type;
 	shortdata = readLittleEndian2Bytes(input);
 	switch (shortdata) {
 		case 0:
@@ -3210,6 +3209,10 @@ std::ostream& MidiFile::writeLittleEndianDouble(std::ostream& out, double value)
 	out << data.bytes[7];
 	return out;
 }
+
+	int MidiFile::getType() const {
+		return type;
+	}
 
 
 } // end namespace smf
