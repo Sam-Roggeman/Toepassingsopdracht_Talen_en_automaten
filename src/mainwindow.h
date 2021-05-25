@@ -5,6 +5,12 @@
 #include <QFileDialog>
 #include <string>
 #include "MusyGen.h"
+#include <QTimer>
+#include <QTime>
+#include <QString>
+#include "MusyGen.h"
+
+class StopWatch;
 
 namespace Ui {
 class Mainwindow;
@@ -12,6 +18,7 @@ class Mainwindow;
 
 class Mainwindow : public QDialog
 {
+    MusyGen*musyGen;
     Q_OBJECT
 
 public:
@@ -25,9 +32,20 @@ private slots:
 
     void on_stackedWidget_currentChanged(int arg1);
 
+    void on_confirm_clicked();
+
+    void on_SetTime_clicked();
+
+    void on_hours_clicked();
+
+    void on_minutes_clicked();
+
+    void on_seconds_clicked();
+
 private:
     Ui::Mainwindow *ui;
-
+    QTimer * timer_ls;
+    //s
 };
 
 #endif // MAINWINDOW_H

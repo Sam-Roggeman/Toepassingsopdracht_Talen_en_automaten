@@ -41,7 +41,7 @@ set(PROJECT_SOURCES
         src/mainwindow.ui
         src/mainwindow.h
         src/mainwindow.cpp
-        )
+        cmake-build-debug/MusyGen_autogen/include/Stopwatch.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MusyGen

@@ -82,10 +82,11 @@ void markovModelTrainingExample(const std::vector<std::string*>& vec)
 
 int main(int argc, char* argv[])
 {
-//    QApplication a(argc, argv);
-//    Mainwindow w;
-//    w.show();
-//    return a.exec();
+
+    QApplication a(argc, argv);
+    Mainwindow w;
+    w.show();
+    return a.exec();
 
 //	smf::MidiFile midifile;
 //	std::string midi_file_name = "twinkle_twinkle";
