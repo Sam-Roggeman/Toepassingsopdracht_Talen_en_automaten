@@ -14,10 +14,11 @@ public:
 	int next_note_delay;
 	int instrument;
 	int track;
+	int channel;
 
 	Note();
 	Note(int _key, int _velocity, int _duration, int _next_note_delay,
-			int _instrument, int _track);
+			int _instrument, int _track, int _channel);
 	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;

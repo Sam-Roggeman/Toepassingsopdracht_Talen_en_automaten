@@ -24,13 +24,78 @@ void MusyGen::importMidiFile(const std::string& filename)
 
 	if (tracks == 1)
 	{
-        for (int event = 0; event < input_midifile[0].size(); event++)
-        {
-            input_midifile[0].getEvent(event).getChannel();
-        }
+            for (int event = 0; event < input_midifile[0].size(); event++) {
+                if (input_midifile[0][event].isTempo()) {
+//                std::cout << input_midifile[0][event].getTempoBPM() << std::endl;
+                    tempo = input_midifile[0][event].getTempoBPM();
+                }
+            }
+
+        std::pair<int, int> trackinst;
+        std::set<std::pair<int, int>> iset;
+            for (int j=0; j<input_midifile[0].getEventCount(); j++) {
+                if (input_midifile[0][j].isTimbre()) {
+                    trackinst.first = 0;
+                    trackinst.second = input_midifile[0][j].getP1();
+                    iset.insert(trackinst);
+                }
+            }
+        for (auto it : iset)
+            std::cout << "Track:" << it.first << "\tInstrument:" << it.second << std::endl;
+
+            // todo: fix instruments
+            // instrument
+            int instrument = 0;
+//		std::cout << "track "<<track << ":" << std::endl;
+//		for (int event = 0; event < input_midifile[track].size(); event++)
+//		{
+//			if (input_midifile[track][event].isInstrumentName())
+//            {
+////			    std::cout << input_midifile[track][event].
+//            }
+//		}
+
+            int current_note_group_ticks = 0;
+            bool is_first_note = true;
+            for (int event = 0; event < input_midifile[0].size(); event++)
+            {
+                if (input_midifile[0][event].isTimbre())
+                {
+                    instrument = input_midifile[0][event].getP1();
+//                instrument_to_track_map[instrument] = track;
+                }
+                if (input_midifile[0][event].isNoteOn())
+                {
+                    Note note(input_midifile[0][event].getKeyNumber(),
+                              input_midifile[0][event].getVelocity(),
+                              input_midifile[0][event].getTickDuration(), 0,
+                              instrument, 0,input_midifile[0][event].getChannel());
+
+                    if (!is_first_note && input_midifile[0][event].tick != current_note_group_ticks)
+                    {
+                        int delay = input_midifile[0][event].tick - current_note_group_ticks;
+
+                        for (auto& note_ : notes[current_note_group_ticks])
+                            note_.next_note_delay = delay;
+                        current_note_group_ticks = input_midifile[0][event].tick;
+                    }
+                    else
+                    {
+                        current_note_group_ticks = input_midifile[0][event].tick;
+                    }
+
+                    is_first_note = false;
+
+                    double starttick = input_midifile[0][event].tick;
+
+                    notes[input_midifile[0][event].tick].push_back(note);
+                }
+            }
 
 	}
 
+	else
+    {
 	// tempo
     for (int track = 0; track < tracks; track++) {
         for (int event = 0; event < input_midifile[track].size(); event++) {
@@ -84,7 +149,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 				Note note(input_midifile[track][event].getKeyNumber(),
 						input_midifile[track][event].getVelocity(),
 						input_midifile[track][event].getTickDuration(), 0,
-						instrument, track);
+						instrument, track,0);
 
 				if (!is_first_note && input_midifile[track][event].tick != current_note_group_ticks)
 				{
@@ -107,7 +172,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 			}
 		}
 	}
-
+    }
 }
 
 void MusyGen::exportMidiFile(const std::string& filename)
@@ -292,8 +357,8 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 //                std::cout << TicksToSeconds(end_tick) << std::endl;
 //                max = end_tick;
 //            }
-            generated_midifile.addNoteOn(track_nr, start_tick, 0, note.key, note.velocity);
-            generated_midifile.addNoteOff(track_nr, end_tick, 0, note.key, note.velocity);
+            generated_midifile.addNoteOn(track_nr, start_tick, note.channel, note.key, note.velocity);
+            generated_midifile.addNoteOff(track_nr, end_tick, note.channel, note.key, note.velocity);
         }
     }
 	generated_midifile.sortTracks();
