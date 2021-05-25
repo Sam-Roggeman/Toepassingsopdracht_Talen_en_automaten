@@ -4,6 +4,7 @@
 
 void MusyGen::importMidiFile(const std::string& filename)
 {
+
 	input_midifile.clear();
 	notes.clear();
 	instrument_to_track_map.clear();
@@ -19,7 +20,6 @@ void MusyGen::importMidiFile(const std::string& filename)
 	tempo = 120;
 
 	tracks = input_midifile.getTrackCount();
-    int count = 0;
 	// todo: add support for midi files of which all info is in track 0
 
 	if (tracks == 1)
@@ -56,7 +56,7 @@ void MusyGen::importMidiFile(const std::string& filename)
         std::cout << "Track:" << it.first << "\tInstrument:" << it.second << std::endl;
 
 
-	for (int track = 1; track < tracks; track++)
+	for (int track = 0; track < tracks; track++)
 	{
 		// todo: fix instruments
 		// instrument
@@ -89,6 +89,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 				if (!is_first_note && input_midifile[track][event].tick != current_note_group_ticks)
 				{
 					int delay = input_midifile[track][event].tick - current_note_group_ticks;
+
 					for (auto& note_ : notes[current_note_group_ticks])
 						note_.next_note_delay = delay;
 					current_note_group_ticks = input_midifile[track][event].tick;
@@ -99,6 +100,9 @@ void MusyGen::importMidiFile(const std::string& filename)
 				}
 
 				is_first_note = false;
+
+				double starttick = input_midifile[track][event].tick;
+
 				notes[input_midifile[track][event].tick].push_back(note);
 			}
 		}
@@ -202,6 +206,13 @@ int MusyGen::SecondsToTicks(double duration)
     return total_ticks;
 }
 
+int MusyGen::TicksToSeconds(double ticks)
+{
+    double TicksPerSecond = (tempo * TPQ)/60.0;
+    int total_ticks= (int)(ticks / TicksPerSecond);
+    return total_ticks;
+}
+
 void MusyGen::generateMusic(double duration_in_seconds)
 {
 	double duration = SecondsToTicks(duration_in_seconds);
@@ -241,7 +252,8 @@ int MusyGen::findMaxDuration(const std::vector<Note>& note_group)
 
 void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_notes)
 {
-	std::map<int,int> prev_ins_per_track;
+    int max = 0;
+    std::map<int,int> prev_ins_per_track;
 //	for (int track = 1; track <tracks;track++) prev_ins_per_track[track] = 0;
 
     generated_midifile.clear();
@@ -263,21 +275,23 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	generated_midifile.addTrackName(0, 0, "Trackname");
 
 	for (const auto& note_group : generated_notes) {
-        for (const auto &note : note_group.second) {
+	    int ins =0;
+	    for (const auto &note : note_group.second) {
             int start_tick = note_group.first;
             int end_tick = note_group.first + note.duration;
 
             int track_nr = note.track;
-            int ins = note.instrument;
-            if (track_nr>10){
-                track_nr =track_nr;
-            }
+            ins = note.instrument;
+
 
             if (prev_ins_per_track.find(track_nr) == prev_ins_per_track.end() || ins != prev_ins_per_track[track_nr]){
-                generated_midifile.addTimbre(track_nr, start_tick-50, 0, ins);
+                generated_midifile.addTimbre(track_nr, start_tick, 0, ins);
                 prev_ins_per_track[track_nr] = ins;
-
             }
+//            if (max < end_tick){
+//                std::cout << TicksToSeconds(end_tick) << std::endl;
+//                max = end_tick;
+//            }
             generated_midifile.addNoteOn(track_nr, start_tick, 0, note.key, note.velocity);
             generated_midifile.addNoteOff(track_nr, end_tick, 0, note.key, note.velocity);
         }

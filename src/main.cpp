@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 //	}
 
 	MusyGen sys;
-	sys.importMidiFile("plastic_love");
+	sys.importMidiFile("twinkle_twinkle");
 //	sys.trainMarkovModel();
 //	sys.generateMusic(120);
 
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 //    std::cout << sys.input_midifile << std::endl;
 //    std::cout << "#############################################################" << std::endl;
 //    std::cout << sys.generated_midifile << std::endl;
-	sys.exportInputMidiFile("plastic_love");
+	sys.exportInputMidiFile("twinkle_twinkle");
 
 	return 0;
 }

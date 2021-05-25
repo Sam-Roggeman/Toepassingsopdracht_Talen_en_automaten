@@ -52,6 +52,8 @@ private:
 	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
 
     int SecondsToTicks(double duration);
+
+    int TicksToSeconds(double ticks);
 };
 
 
