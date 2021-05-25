@@ -44,6 +44,7 @@ public:
     StopWatch *widget;
     QWidget *page_6;
     StopWatch *widget_2;
+    QWidget *page_7;
 
     void setupUi(QDialog *Mainwindow)
     {
@@ -111,10 +112,13 @@ public:
         widget_2->setObjectName(QString::fromUtf8("widget_2"));
         widget_2->setGeometry(QRect(210, 210, 301, 161));
         stackedWidget->addWidget(page_6);
+        page_7 = new QWidget();
+        page_7->setObjectName(QString::fromUtf8("page_7"));
+        stackedWidget->addWidget(page_7);
 
         retranslateUi(Mainwindow);
 
-        stackedWidget->setCurrentIndex(5);
+        stackedWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(Mainwindow);

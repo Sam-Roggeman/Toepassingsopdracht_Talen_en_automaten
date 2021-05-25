@@ -43,6 +43,7 @@ void Mainwindow::on_confirm_clicked()
     this->on_stackedWidget_currentChanged(2);
     QString a = this->ui->textEdit->toPlainText();
     musyGen->setMarkovOrder(std::stoi(a.toStdString()));
+    musyGen->trainMarkovModel();
 }
 
 void Mainwindow::on_SetTime_clicked()

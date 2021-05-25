@@ -10,7 +10,7 @@ void MusyGen::importMidiFile(const std::string& filename)
 	instrument_to_track_map.clear();
 
 
-    input_midifile.read("../input_files/midi/" + filename + ".mid");
+    input_midifile.read(filename);
 	input_midifile.absoluteTicks();
 	input_midifile.doTimeAnalysis();
 	input_midifile.linkNotePairs();
