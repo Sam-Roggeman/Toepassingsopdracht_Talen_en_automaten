@@ -275,7 +275,7 @@ public:
         for (auto &state : states) delete state;
     }
 
-    MarkovChain<T>& operator=(MarkovChain<T> other)
+    VariableMarkovChain<T>& operator=(MarkovChain<T> other)
     {
         this->clear();
         this->order = other.order;
@@ -283,6 +283,7 @@ public:
         for (const auto& other_state : other.states)
         {
             State* new_state = new State(other_state->data);
+			states.insert(new_state);
         }
 
         for (const auto& other_state : other.states)

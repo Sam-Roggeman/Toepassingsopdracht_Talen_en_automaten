@@ -63,7 +63,6 @@ void markovModelTrainingExample(const std::vector<std::string*>& vec)
 		for (const auto& frequency : state.second)
 		{
 			double probability = (double)frequency.second / total_frequencies;
-			new_food_chain.addState(state.first.second);
 			new_food_chain.setTransition(state.first.second, { state.first.first }, frequency.first, probability);
 			std::cout << "\t" << frequency.first << ": " << probability * 100 << "%" << std::endl;
 		}
@@ -83,10 +82,10 @@ void markovModelTrainingExample(const std::vector<std::string*>& vec)
 int main(int argc, char* argv[])
 {
 
-    QApplication a(argc, argv);
-    Mainwindow w;
-    w.show();
-    return a.exec();
+//    QApplication a(argc, argv);
+//    Mainwindow w;
+//    w.show();
+//    return a.exec();
 
 //	smf::MidiFile midifile;
 //	std::string midi_file_name = "twinkle_twinkle";
@@ -120,15 +119,17 @@ int main(int argc, char* argv[])
 //	}
 
 	MusyGen sys;
-	sys.importMidiFile("twinkle_twinkle");
-//	sys.trainMarkovModel();
-//	sys.generateMusic(120);
+	sys.importMidiFile("./../midi_files/input_files/ThemeA.mid"); // Super Mario 64 - Dire Dire Docks.mid
+	sys.setMarkovOrder(2);
+	sys.trainMarkovModel();
+	sys.generateMusic(120);
+	sys.exportMidiFile("./../midi_files/output_files/ThemeA.mid");
 
 //	std::cout << sys.generated_midifile << std::endl;
 //    std::cout << sys.input_midifile << std::endl;
 //    std::cout << "#############################################################" << std::endl;
 //    std::cout << sys.generated_midifile << std::endl;
-	sys.exportInputMidiFile("twinkle_twinkle");
+
 
 	return 0;
 }
