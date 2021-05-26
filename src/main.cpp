@@ -120,10 +120,10 @@ int main(int argc, char* argv[])
 
 	MusyGen sys;
 	sys.importMidiFile("./../midi_files/input_files/ThemeA.mid"); // Super Mario 64 - Dire Dire Docks.mid
-	sys.setMarkovOrder(2);
+	sys.setMarkovOrder(3);
 	sys.trainMarkovModel();
 	sys.generateMusic(120);
-	sys.exportMidiFile("./../midi_files/output_files/ThemeA.mid");
+	sys.exportMidiFile("./../midi_files/output_files/ThemeA_third_order.mid");
 
 //	std::cout << sys.generated_midifile << std::endl;
 //    std::cout << sys.input_midifile << std::endl;
