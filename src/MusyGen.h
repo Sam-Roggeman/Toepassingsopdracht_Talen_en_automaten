@@ -20,6 +20,7 @@ public:
 	double tempo = 0;
 
 	MarkovChain<std::vector<Note>> music_markov_chain;
+	MarkovChain<std::vector<std::vector<Note>>> music_variable_to_first_chain;
 	smf::MidiFile generated_midifile;
 
 	unsigned int markov_order = 1;
@@ -28,9 +29,9 @@ public:
 public:
 	MusyGen();
 
-	void importMidiFile(const std::string& filename);
+	void importMidiFile(const std::string& filepath);
 
-	void exportMidiFile(const std::string& filename);
+	void exportMidiFile(const std::string& filepath);
 
 	void exportInputMidiFile(const std::string& filename);
 
@@ -48,6 +49,8 @@ public:
 
 private:
 	static int findMaxDuration(const std::vector<Note>& note_group);
+
+	static int findMinDuration(const std::vector<Note>& note_group);
 
 	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
 

@@ -165,6 +165,7 @@ public:
 		for (const auto& other_state : other.states)
 		{
 			State* new_state = new State(other_state->data);
+			states.insert(new_state);
 		}
 
 		for (const auto& other_state : other.states)
