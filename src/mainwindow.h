@@ -9,6 +9,7 @@
 #include <QTime>
 #include <QString>
 #include "MusyGen.h"
+#include <thread>
 
 class StopWatch;
 
@@ -18,6 +19,7 @@ class Mainwindow;
 
 class Mainwindow : public QDialog
 {
+    std::thread thread1;
     MusyGen*musyGen;
     Q_OBJECT
 
@@ -43,6 +45,26 @@ private slots:
     void on_seconds_clicked();
 
     void on_Infinite_clicked();
+
+    void on_Start_clicked();
+
+    void on_Stop_clicked();
+
+    void on_Pause_clicked();
+
+    void on_Export_clicked();
+
+    void on_New_generate_clicked();
+
+    void on_diff_order_clicked();
+
+    void on_diff_time_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void on_pushButton_5_clicked();
+
+    void on_pushButton_6_clicked();
 
 private:
     Ui::Mainwindow *ui;

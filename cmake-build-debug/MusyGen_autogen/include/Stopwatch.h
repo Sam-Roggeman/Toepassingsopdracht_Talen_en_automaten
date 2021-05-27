@@ -26,21 +26,11 @@ public:
             , mStartTime()
             , mLabel(new QLabel("00:00:00,000"))
             , mTotalTime(0)
-            , mStart(new QPushButton("Start"))
-            , mPause(new QPushButton("Pause"))
-            , mStop(new QPushButton("Stop"))
-            , mOpened(true)
+            , mstop(false)
     {
         QGridLayout * gridLayout = new QGridLayout(this);
 
         gridLayout->addWidget(mLabel,   0, 0, 1, 3);
-        gridLayout->addWidget(mStart,   1, 0, 1, 1);
-        gridLayout->addWidget(mPause,   1, 1, 1, 1);
-        gridLayout->addWidget(mStop,    1, 2, 1, 1);
-
-        connect(mStart, SIGNAL(clicked()), SLOT(start()));
-        connect(mPause, SIGNAL(clicked()), SLOT(pause()));
-        connect(mStop, SIGNAL(clicked()), SLOT(stop()));
 
         QFont font("Arial", 24, QFont::Bold);
         QPalette palette = mLabel->palette();
@@ -48,85 +38,33 @@ public:
         mLabel->setPalette(palette);
         mLabel->setFont(font);
         gridLayout->setAlignment(mLabel, Qt::AlignCenter);
-
-        mStart->setEnabled(true);
-        mPause->setEnabled(false);
-        mStop->setEnabled(false);
-
-        startTimer(0);
-    }
-
-    explicit StopWatch( Mainwindow*dialogs,std::string file, QWidget * parent = 0)
-            : QWidget(parent)
-            , mRunning(false)
-            , mStartTime()
-            , mLabel(new QLabel("00:00:00,000"))
-            , mTotalTime(0)
-            , mStart(new QPushButton("Start"))
-            , mPause(new QPushButton("Pause"))
-            , mStop(new QPushButton("Stop"))
-            , mOpened(true)
-            , mQdialog(dialogs)
-            , mfilename(std::move(file))
-    {
-        QGridLayout * gridLayout = new QGridLayout(this);
-
-        gridLayout->addWidget(mLabel,   0, 0, 1, 3);
-        gridLayout->addWidget(mStart,   1, 0, 1, 1);
-        gridLayout->addWidget(mPause,   1, 1, 1, 1);
-        gridLayout->addWidget(mStop,    1, 2, 1, 1);
-
-        connect(mStart, SIGNAL(clicked()), SLOT(start()));
-        connect(mPause, SIGNAL(clicked()), SLOT(pause()));
-        connect(mStop, SIGNAL(clicked()), SLOT(stop()));
-
-        QFont font("Arial", 24, QFont::Bold);
-        QPalette palette = mLabel->palette();
-        palette.setColor(QPalette::WindowText, Qt::blue);
-        mLabel->setPalette(palette);
-        mLabel->setFont(font);
-        gridLayout->setAlignment(mLabel, Qt::AlignCenter);
-
-        mStart->setEnabled(true);
-        mPause->setEnabled(false);
-        mStop->setEnabled(false);
 
         startTimer(0);
     }
 
 public slots:
-    bool getMOpened(){
-        return mOpened;
+    bool getmstop(){
+        return mstop;
     };
     void start(void)
     {
         mStartTime = QDateTime::currentDateTime();
         mRunning = true;
-        mStart->setEnabled(false);
-        mPause->setEnabled(true);
-        mStop->setEnabled(true);
     }
 
     void pause(void)
     {
-        mStart->setEnabled(true);
-        mPause->setEnabled(false);
-        mStop->setEnabled(true);
         timerEvent(new QTimerEvent(0));
         mTotalTime += mSessionTime;
         mRunning = false;
-        mOpened = false;
     }
 
     void stop(void)
     {
-        mStart->setEnabled(true);
-        mPause->setEnabled(false);
-        mStop->setEnabled(false);
         mTotalTime = 0;
         mRunning = false;
-        double totaltime = (double)mSessionTime/1000;
-
+        mSessionTime = 0;
+        mstop = true;
     }
 
 protected:
@@ -150,18 +88,12 @@ protected:
     }
 
 private:
-    bool        mOpened;
+    bool        mstop;
     bool        mRunning;
     QDateTime   mStartTime;
     QLabel *    mLabel;
     qint64      mTotalTime;
     qint64      mSessionTime;
-    Mainwindow*    mQdialog;
-    std::string         mfilename;
-
-    QPushButton * mStart;
-    QPushButton * mPause;
-    QPushButton * mStop;
 };
 
 

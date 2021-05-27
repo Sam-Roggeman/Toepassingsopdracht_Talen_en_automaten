@@ -43,10 +43,10 @@ set(PROJECT_SOURCES
         src/MusyGen.cpp
         src/MusyGen.h
 
-#        src/mainwindow.ui
-#        src/mainwindow.h
-#        src/mainwindow.cpp
-#        ./cmake-build-debug/MusyGen_autogen/include/Stopwatch.h
+        src/mainwindow.ui
+        src/mainwindow.h
+        src/mainwindow.cpp
+        ./cmake-build-debug/MusyGen_autogen/include/Stopwatch.h
 
         )
 

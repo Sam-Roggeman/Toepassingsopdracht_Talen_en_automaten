@@ -38,6 +38,7 @@ public:
 	unsigned int markov_order = 1;
 	int volume = 50;
 	bool volume_changed = false;
+	bool playing_inf = false;
 
 public:
 	MusyGen();
@@ -62,6 +63,8 @@ public:
 
 	void changeVolume(int _volume);
 
+    void setPlayInf(bool inf);
+
 
 private:
 	static int findMaxDuration(const std::vector<Note>& note_group);
@@ -81,6 +84,7 @@ private:
     void volumeMessage(RtMidiOut *midiout);
 
     double TicksToSecondsDouble(double ticks);
+
 };
 
 

@@ -457,7 +457,6 @@ void MusyGen::playMusicInfinitely()
 	//tick -> action
 	std::map<int, smf::MidiMessage> buffer;
 	int buffer_size = SecondsToTicks(5);
-	bool playing_inf_music = true;
 	// Check available ports.
 
 	auto current_group_of_nodes = music_markov_chain.getRandomState();
@@ -517,7 +516,7 @@ void MusyGen::playMusicInfinitely()
 	int todelete;
 	unsigned int minim;
 	std::map<unsigned long, const Note*>::iterator map_it;
-	while (playing_inf_music)
+	while (playing_inf)
 	{
 		todelete = 0;
 		minim = findMinDuration(current_group_of_nodes) + current_tick;
@@ -623,5 +622,9 @@ void MusyGen::changeVolume(const int _volume)
 MusyGen::MusyGen()
 {
 	srand((unsigned)time(nullptr));
+}
+
+void MusyGen::setPlayInf(bool inf) {
+    playing_inf = inf;
 }
 
