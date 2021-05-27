@@ -58,7 +58,7 @@ public:
 	 * Als referencie voor de MIDI Output
 	 * https://www.music.mcgill.ca/~gary/rtmidi/index.html
 	 */
-	void playMusicInfinitly();
+	void playMusicInfinitely();
 
 	void changeVolume(int _volume);
 

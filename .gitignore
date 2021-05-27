@@ -32,7 +32,5 @@
 *.app
 
 cmake-build-debug
-
-cmake-build-debug
 .idea
-midi_files/output_files
+/midi_files/output_files/

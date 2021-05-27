@@ -157,7 +157,6 @@ public:
 		for (auto& state : states) delete state;
 	}
 
-    //todo: test
 	MarkovChain<T>& operator=(MarkovChain<T> other)
 	{
 		clear();
