@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
 	sys.setMarkovOrder(30);
 	sys.trainMarkovModel();
 //	sys.playMusicInfinitely();
-//	sys.generateMusic(120);
-//	sys.exportInputMidiFile("./../midi_files/output_files/twinke_twinkle.mid");
+	sys.generateMusic(120);
+	sys.exportMidiFile("./../midi_files/output_files/Sample_exported.mid");
 
 //	std::cout << sys.generated_midifile << std::endl;
 //    std::cout << sys.input_midifile << std::endl;
