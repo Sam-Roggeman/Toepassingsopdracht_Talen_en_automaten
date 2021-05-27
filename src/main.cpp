@@ -12,10 +12,10 @@
 
 int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
-    Mainwindow w;
-    w.show();
-    return a.exec();
+//    QApplication a(argc, argv);
+//    Mainwindow w;
+//    w.show();
+//    return a.exec();
 
 //	smf::MidiFile midifile;
 //	std::string midi_file_name = "twinkle_twinkle";
@@ -48,10 +48,11 @@ int main(int argc, char* argv[])
 //		}
 //	}
 
-//	MusyGen sys;
-//	sys.importMidiFile("./../midi_files/input_files/Super Mario 64 - Dire Dire Docks.mid"); // Super Mario 64 - Dire Dire Docks.mid
-//	sys.setMarkovOrder(2);
-//	sys.trainMarkovModel();
+	MusyGen sys;
+	sys.setPlayInf(true);
+	sys.importMidiFile("./../midi_files/input_files/samplesong1.mid"); // Super Mario 64 - Dire Dire Docks.mid
+	sys.setMarkovOrder(30);
+	sys.trainMarkovModel();
 //	sys.playMusicInfinitely();
 //	sys.generateMusic(120);
 //	sys.exportInputMidiFile("./../midi_files/output_files/twinke_twinkle.mid");

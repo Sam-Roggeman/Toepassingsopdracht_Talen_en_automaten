@@ -325,12 +325,12 @@ int MusyGen::TicksToSeconds(double ticks)
 	return total_ticks;
 }
 
-double MusyGen::TicksToSecondsDouble(double ticks)
-{
-	double TicksPerSecond = (tempo * TPQ) / 60.0;
-	double total_ticks = ticks / TicksPerSecond;
-	return total_ticks;
+double MusyGen::TicksToMs(double ticks) {
+    double TicksPerSecond = (tempo * TPQ) / 60.0;
+    double total_ticks = ticks / TicksPerSecond;
+    return total_ticks * 1000;
 }
+
 
 void MusyGen::generateMusic(double duration_in_seconds)
 {
@@ -445,23 +445,21 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	generated_midifile.sortTracks();
 }
 
-void MusyGen::playMusicInfinitely()
-{
-    unsigned int tempo_sleep = ((1/tempo)*10000.00);
-	smf::MidiMessage message = smf::MidiMessage();
-	RtMidiOut* midiout = new RtMidiOut();
+void MusyGen::playMusicInfinitely() {
+    unsigned int tempo_sleep = 0; //((3/tempo)*10000.00);
+    smf::MidiMessage message = smf::MidiMessage();
+    RtMidiOut *midiout = new RtMidiOut();
 
-	auto current_group_of_nodes = music_markov_chain.getRandomState();
-	//channel -> instrument
-	std::map<int, int> current_active_instruments;
-	//abs ticks -> notes
-	std::map<unsigned int, const Note*> node_duration;
-	// instrument van huidige node
-	int instrument;
-	//huidige tick
-	unsigned int current_tick = 0;
-	//aantal sleep - ticks
-	unsigned int sleep_ticks;
+    //channel -> instrument
+    std::map<int, int> current_active_instruments;
+    //abs ticks -> notes
+    std::map<unsigned int, const Note *> node_duration;
+    // instrument van huidige node
+    int instrument;
+    //huidige tick
+    unsigned int current_tick = 0;
+    //aantal sleep - ticks
+    unsigned int sleep_ticks;
     //aantal nodes dat gestopt is
 	int todelete;
 	//minimum van de huidige groep
@@ -477,10 +475,12 @@ void MusyGen::playMusicInfinitely()
 	midiout->sendMessage(&message);
 	volumeMessage(midiout);
 
-	std::map<unsigned int, const Note*>::iterator map_it;
-	if (markov_order == 1) {
+    std::map<unsigned int, const Note *>::iterator map_it;
+    if (markov_order == 1) {
+        std::vector<Note> current_group_of_nodes = music_markov_chain.getRandomState();
+
         while (playing_inf) {
-            SLEEP(2 * tempo_sleep);
+            SLEEP(tempo_sleep);
             current_tick += tempo_sleep;
             todelete = 0;
             minim = findMinDuration(current_group_of_nodes) + current_tick;
@@ -499,26 +499,16 @@ void MusyGen::playMusicInfinitely()
                 }
                 message.makeNoteOn(node.track, node.key, node.velocity);
                 midiout->sendMessage(&message);
-
-//            SLEEP( 500 );
             }
             for (const auto &node:node_duration) {
-//            current_tick += tempo_sleep;
-//            SLEEP( tempo_sleep);
 
                 if (node.first >= minim) {
                     break;
                 }
                 if (current_tick < node.first) {
                     sleep_ticks = (node.first - current_tick);
-//                if (minim >= node.first) {
-//                    minim = findMinDuration(current_group_of_nodes) + current_tick;
-//                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
-//                    current_tick += sleep_ticks;
-//                    break;
-//                }
-
-                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
+                    SLEEP(TicksToMs(sleep_ticks));
+//                    SLEEP(10 * 1000.00);
                     //                prev_tick = current_tick;
 
                 } else {
@@ -540,10 +530,10 @@ void MusyGen::playMusicInfinitely()
     }
     else if (markov_order > 1) {
         std::vector<std::vector<Note>> current_state = music_variable_to_first_chain.getRandomState();
-        std::vector<Note> current_group_of_notes = current_state.back();
+        std::vector<Note> current_group_of_nodes = current_state.back();
         while (playing_inf) {
-            current_group_of_notes = current_state.back();
-            SLEEP(2 * tempo_sleep);
+            current_group_of_nodes = current_state.back();
+            SLEEP(tempo_sleep);
             current_tick += tempo_sleep;
             todelete = 0;
             minim = findMinDuration(current_group_of_nodes) + current_tick;
@@ -581,7 +571,7 @@ void MusyGen::playMusicInfinitely()
 //                    break;
 //                }
 
-                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
+                    SLEEP(TicksToMs(sleep_ticks) * 1000.00);
                     //                prev_tick = current_tick;
 
                 } else {
@@ -684,3 +674,10 @@ void MusyGen::setPlayInf(bool inf) {
     playing_inf = inf;
 }
 
+int MusyGen::findMinDelay(std::vector<Note> &notes) {
+    int min = std::numeric_limits<int>::max();
+    for (const Note &note:notes) {
+        min = std::min(note.next_note_delay, min);
+    }
+    return min;
+}

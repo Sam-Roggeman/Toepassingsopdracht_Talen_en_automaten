@@ -83,9 +83,12 @@ private:
 
     void volumeMessage(RtMidiOut *midiout);
 
-    double TicksToSecondsDouble(double ticks);
 
     void openPort(RtMidiOut *midiout);
+
+    double TicksToMs(double ticks);
+
+    int findMinDelay(std::vector<Note> &notes);
 };
 
 
