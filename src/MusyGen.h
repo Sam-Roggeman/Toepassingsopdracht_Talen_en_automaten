@@ -88,7 +88,7 @@ private:
 
     double TicksToMs(double ticks);
 
-    int findMinDelay(std::vector<Note> &notes);
+    static int findMinDelay(std::vector<Note> &note_group);
 };
 
 
