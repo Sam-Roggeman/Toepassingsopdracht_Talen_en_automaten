@@ -2,12 +2,24 @@
 #define MUSYGEN_MUSYGEN_H
 
 
+
+#include <limits.h>
 #include "../libs/midifile/include/MidiFile.h"
+#include "../libs/midifile/include/MidiMessage.h"
 #include "data_structures/Note.h"
 #include "data_structures/MarkovChain.hpp"
 #include "data_structures/VariableMarkovChain.hpp"
 #include <iomanip>
-//#include "../libs/midifile/include/RtMidi.h"
+#include "../libs/RTMidi//include/RtMidi.h"
+
+// Platform-dependent sleep routines.
+#if defined(WIN32)
+#include <windows.h>
+#define SLEEP( milliseconds ) Sleep( (DWORD) milliseconds )
+#else // Unix variants
+#include <unistd.h>
+  #define SLEEP( milliseconds ) usleep( (unsigned long) (milliseconds * 1000.0) )
+#endif
 
 class MusyGen
 {
@@ -25,6 +37,7 @@ public:
 
 	unsigned int markov_order = 1;
 	int volume = 50;
+	bool volume_changed = false;
 
 public:
 	MusyGen();
@@ -41,11 +54,14 @@ public:
 
 	void generateMusic(double duration_in_seconds);
 
+	/**
+	 * Als referencie voor de MIDI Output
+	 * https://www.music.mcgill.ca/~gary/rtmidi/index.html
+	 */
 	void playMusicInfinitly();
 
 	void changeVolume(int _volume);
 
-	void volumeArrow(bool up);
 
 private:
 	static int findMaxDuration(const std::vector<Note>& note_group);
@@ -57,6 +73,14 @@ private:
     int SecondsToTicks(double duration);
 
     int TicksToSeconds(double ticks);
+
+    void startNote(char key, char velocity, RtMidiOut *midiout);
+
+    void endNote(char key, char velocity, RtMidiOut *midiout);
+
+    void volumeMessage(RtMidiOut *midiout);
+
+    double TicksToSecondsDouble(double ticks);
 };
 
 

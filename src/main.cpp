@@ -119,11 +119,12 @@ int main(int argc, char* argv[])
 //	}
 
 	MusyGen sys;
-	sys.importMidiFile("./../midi_files/input_files/ThemeA.mid"); // Super Mario 64 - Dire Dire Docks.mid
-	sys.setMarkovOrder(3);
+	sys.importMidiFile("./../midi_files/input_files/Super Mario 64 - Dire Dire Docks.mid"); // Super Mario 64 - Dire Dire Docks.mid
+//	sys.setMarkovOrder(2);
 	sys.trainMarkovModel();
-	sys.generateMusic(120);
-	sys.exportMidiFile("./../midi_files/output_files/ThemeA_third_order.mid");
+	sys.playMusicInfinitly();
+//	sys.generateMusic(120);
+//	sys.exportInputMidiFile("./../midi_files/output_files/twinke_twinkle.mid");
 
 //	std::cout << sys.generated_midifile << std::endl;
 //    std::cout << sys.input_midifile << std::endl;

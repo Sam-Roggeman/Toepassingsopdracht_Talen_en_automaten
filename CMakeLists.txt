@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
+add_compile_definitions(__WINDOWS_MM__)
 
 project(MusyGen LANGUAGES CXX)
 
@@ -31,7 +32,9 @@ set(PROJECT_SOURCES
         libs/midifile/src/MidiMessage.cpp
         libs/midifile/src/Options.cpp
 
-#        libs/RTMidi/include/RtMidi.h
+        libs/RTMidi/include/RtMidi.h
+        libs/RTMidi/src/RtMidi.cpp
+
 
         src/data_structures/MarkovChain.hpp
         src/data_structures/VariableMarkovChain.hpp
@@ -40,10 +43,12 @@ set(PROJECT_SOURCES
         src/MusyGen.cpp
         src/MusyGen.h
 
-        src/mainwindow.ui
-        src/mainwindow.h
-        src/mainwindow.cpp
-        cmake-build-debug/MusyGen_autogen/include/Stopwatch.h)
+#        src/mainwindow.ui
+#        src/mainwindow.h
+#        src/mainwindow.cpp
+#        ./cmake-build-debug/MusyGen_autogen/include/Stopwatch.h
+
+        )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MusyGen
@@ -61,4 +66,4 @@ else()
     endif()
 endif()
 
-target_link_libraries(MusyGen PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(MusyGen PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Winmm.lib)
