@@ -363,8 +363,7 @@ void MusyGen::generateMusic(double duration_in_seconds)
 			curr_duration += findMinDuration(current_group_of_notes);
 		}
 	}
-	else
-	{
+	else{
 		std::vector<std::vector<Note>> current_state = music_variable_to_first_chain.getRandomState();
 		std::vector<Note> current_group_of_notes = current_state.back();
 		int curr_duration = 0;
@@ -377,11 +376,9 @@ void MusyGen::generateMusic(double duration_in_seconds)
 			current_state = music_variable_to_first_chain.getNextState(current_state);
 			current_group_of_notes = current_state.back();
 			generated_notes[curr_duration] = current_group_of_notes;
-
 			curr_duration += findMaxDuration(current_group_of_notes);
 		}
 	}
-
 	notesToMidi(generated_notes);
 }
 
@@ -450,102 +447,70 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 
 void MusyGen::playMusicInfinitely()
 {
+    unsigned int tempo_sleep = ((1/tempo)*10000.00);
 	smf::MidiMessage message = smf::MidiMessage();
 	RtMidiOut* midiout = new RtMidiOut();
-	double tempo_ver = tempo / 120.00;
-
-	//tick -> action
-	std::map<int, smf::MidiMessage> buffer;
-	int buffer_size = SecondsToTicks(5);
-	// Check available ports.
 
 	auto current_group_of_nodes = music_markov_chain.getRandomState();
 	//channel -> instrument
 	std::map<int, int> current_active_instruments;
-	//delta ticks -> notes
-	std::map<unsigned long, const Note*> node_duration;
+	//abs ticks -> notes
+	std::map<unsigned int, const Note*> node_duration;
+	// instrument van huidige node
 	int instrument;
-	unsigned long current_tick = 0;
+	//huidige tick
+	unsigned int current_tick = 0;
+	//aantal sleep - ticks
 	unsigned int sleep_ticks;
-	unsigned long prev_tick = 0;
-
-	std::string portName;
-	unsigned int i = 0, nPorts = midiout->getPortCount();
-	if (nPorts == 0)
-	{
-		std::cout << "No output ports available!" << std::endl;
-	}
-
-	if (nPorts == 1)
-	{
-		std::cout << "\nOpening " << midiout->getPortName() << std::endl;
-	}
-	else
-	{
-		for (i = 0; i < nPorts; i++)
-		{
-			portName = midiout->getPortName(i);
-			std::cout << "  Output port #" << i << ": " << portName << '\n';
-		}
-
-		do
-		{
-			std::cout << "\nChoose a port number: ";
-			std::cin >> i;
-		} while (i >= nPorts);
-	}
-
-	std::cout << "\n";
-	midiout->openPort(i);
-
+    //aantal nodes dat gestopt is
+	int todelete;
+	//minimum van de huidige groep
+    unsigned int minim;
+    openPort(midiout);
 	// Program change: 192, 5
 	message.push_back(192);
 	message.push_back(5);
 	midiout->sendMessage(&message);
 	SLEEP(500);
-
 	message[0] = 0xF1;
 	message[1] = 60;
 	midiout->sendMessage(&message);
-
-	// Open first available port.
-//    midiout->openPort( 0 );
 	volumeMessage(midiout);
-//    message.makeTempo(tempo);
-//    midiout->sendMessage(&message);
-	int todelete;
-	unsigned int minim;
-	std::map<unsigned long, const Note*>::iterator map_it;
-	while (playing_inf)
-	{
-		todelete = 0;
-		minim = findMinDuration(current_group_of_nodes) + current_tick;
 
-		for (const auto& node : current_group_of_nodes)
-		{
-			instrument = node.instrument;
-			node_duration[node.duration + current_tick] = &node;
-			if (volume_changed)
-			{
-				volumeMessage(midiout);
-			}
-			if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
-				current_active_instruments[node.track] == instrument)
-			{
-				current_active_instruments[node.track] = instrument;
-				message.makeTimbre(node.track, instrument);
-				midiout->sendMessage(&message);
-			}
-			message.makeNoteOn(node.track, node.key, node.velocity);
-			midiout->sendMessage(&message);
+	std::map<unsigned int, const Note*>::iterator map_it;
+	if (markov_order == 1) {
+        while (playing_inf) {
+            SLEEP(2 * tempo_sleep);
+            current_tick += tempo_sleep;
+            todelete = 0;
+            minim = findMinDuration(current_group_of_nodes) + current_tick;
+
+            for (const auto &node : current_group_of_nodes) {
+                instrument = node.instrument;
+                node_duration[node.duration + current_tick] = &node;
+                if (volume_changed) {
+                    volumeMessage(midiout);
+                }
+                if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
+                    current_active_instruments[node.track] == instrument) {
+                    current_active_instruments[node.track] = instrument;
+                    message.makeTimbre(node.track, instrument);
+                    midiout->sendMessage(&message);
+                }
+                message.makeNoteOn(node.track, node.key, node.velocity);
+                midiout->sendMessage(&message);
 
 //            SLEEP( 500 );
-		}
-		for (const auto& node:node_duration)
-		{
-			if (current_tick < node.first)
-			{
-				sleep_ticks = (node.first - current_tick);
+            }
+            for (const auto &node:node_duration) {
+//            current_tick += tempo_sleep;
+//            SLEEP( tempo_sleep);
+
+                if (node.first >= minim) {
+                    break;
+                }
+                if (current_tick < node.first) {
+                    sleep_ticks = (node.first - current_tick);
 //                if (minim >= node.first) {
 //                    minim = findMinDuration(current_group_of_nodes) + current_tick;
 //                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
@@ -553,34 +518,125 @@ void MusyGen::playMusicInfinitely()
 //                    break;
 //                }
 
-				SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
-				//                prev_tick = current_tick;
+                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
+                    //                prev_tick = current_tick;
 
-			}
-			else
-			{
-				message.makeNoteOff(node.second->track, node.second->key, node.second->velocity);
-				midiout->sendMessage(&message);
-				todelete++;
-			}
-			current_tick = std::max(node.first, current_tick);
-			if (current_tick >= minim)
-			{
-				break;
-			}
-		}
-		current_group_of_nodes = music_markov_chain.getNextState(current_group_of_nodes);
-		if (todelete > 0)
-		{
-			map_it = node_duration.begin();
-			std::advance(map_it, todelete);
-			node_duration.erase(node_duration.begin(), map_it);
-		}
-	}
+                } else {
+                    message.makeNoteOff(node.second->track, node.second->key, node.second->velocity);
+                    midiout->sendMessage(&message);
+
+                    todelete++;
+                }
+                current_tick = std::max(node.first, current_tick);
+
+            }
+            current_group_of_nodes = music_markov_chain.getNextState(current_group_of_nodes);
+            if (todelete > 0) {
+                map_it = node_duration.begin();
+                std::advance(map_it, todelete);
+                node_duration.erase(node_duration.begin(), map_it);
+            }
+        }
+    }
+    else if (markov_order > 1) {
+        std::vector<std::vector<Note>> current_state = music_variable_to_first_chain.getRandomState();
+        std::vector<Note> current_group_of_notes = current_state.back();
+        while (playing_inf) {
+            current_group_of_notes = current_state.back();
+            SLEEP(2 * tempo_sleep);
+            current_tick += tempo_sleep;
+            todelete = 0;
+            minim = findMinDuration(current_group_of_nodes) + current_tick;
+
+            for (const auto &node : current_group_of_nodes) {
+                instrument = node.instrument;
+                node_duration[node.duration + current_tick] = &node;
+                if (volume_changed) {
+                    volumeMessage(midiout);
+                }
+                if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
+                    current_active_instruments[node.track] == instrument) {
+                    current_active_instruments[node.track] = instrument;
+                    message.makeTimbre(node.track, instrument);
+                    midiout->sendMessage(&message);
+                }
+                message.makeNoteOn(node.track, node.key, node.velocity);
+                midiout->sendMessage(&message);
+
+//            SLEEP( 500 );
+            }
+            for (const auto &node:node_duration) {
+//            current_tick += tempo_sleep;
+//            SLEEP( tempo_sleep);
+
+                if (node.first >= minim) {
+                    break;
+                }
+                if (current_tick < node.first) {
+                    sleep_ticks = (node.first - current_tick);
+//                if (minim >= node.first) {
+//                    minim = findMinDuration(current_group_of_nodes) + current_tick;
+//                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
+//                    current_tick += sleep_ticks;
+//                    break;
+//                }
+
+                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
+                    //                prev_tick = current_tick;
+
+                } else {
+                    message.makeNoteOff(node.second->track, node.second->key, node.second->velocity);
+                    midiout->sendMessage(&message);
+
+                    todelete++;
+                }
+                current_tick = std::max(node.first, current_tick);
+
+            }
+            current_state = music_variable_to_first_chain.getNextState(current_state);
+            if (todelete > 0) {
+                map_it = node_duration.begin();
+                std::advance(map_it, todelete);
+                node_duration.erase(node_duration.begin(), map_it);
+            }
+        }
+    }
 cleanup:
 	delete midiout;
 	return;
 }
+
+void MusyGen::openPort(RtMidiOut* midiout){
+    std::string portName;
+    unsigned int i = 0, nPorts = midiout->getPortCount();
+    if (nPorts == 0)
+    {
+        std::cout << "No output ports available!" << std::endl;
+    }
+
+    if (nPorts == 1)
+    {
+        std::cout << "\nOpening " << midiout->getPortName() << std::endl;
+    }
+    else
+    {
+        for (i = 0; i < nPorts; i++)
+        {
+            portName = midiout->getPortName(i);
+            std::cout << "  Output port #" << i << ": " << portName << '\n';
+        }
+
+        do
+        {
+            std::cout << "\nChoose a port number: ";
+            std::cin >> i;
+        } while (i >= nPorts);
+    }
+
+    std::cout << "\n";
+    midiout->openPort(i);
+}
+
 
 void MusyGen::volumeMessage(RtMidiOut* midiout)
 {

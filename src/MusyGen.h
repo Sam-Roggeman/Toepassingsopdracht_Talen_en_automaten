@@ -85,6 +85,7 @@ private:
 
     double TicksToSecondsDouble(double ticks);
 
+    void openPort(RtMidiOut *midiout);
 };
 
 
