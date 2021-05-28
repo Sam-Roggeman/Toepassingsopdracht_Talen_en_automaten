@@ -2,7 +2,7 @@
 #define MUSYGEN_MUSYGEN_H
 
 
-
+#include <stdio.h>
 #include <limits.h>
 #include "../libs/midifile/include/MidiFile.h"
 #include "../libs/midifile/include/MidiMessage.h"

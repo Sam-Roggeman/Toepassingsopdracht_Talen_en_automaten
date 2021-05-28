@@ -450,173 +450,102 @@ void MusyGen::playMusicInfinitely()
 	smf::MidiMessage message = smf::MidiMessage();
 	RtMidiOut* midiout = new RtMidiOut();
 
-	//channel -> instrument
-	std::map<int, int> current_active_instruments;
-	//abs ticks -> notes
-	std::map<unsigned int, const Note*> node_duration;
-	// instrument van huidige node
-	int instrument;
-	//huidige tick
-	unsigned int current_tick = 0;
-	//aantal sleep - ticks
-	unsigned int sleep_ticks;
-	//aantal nodes dat gestopt is
-	int todelete;
-	//minimum van de huidige groep
-	unsigned int minim;
-	openPort(midiout);
-	// Program change: 192, 5
-	message.push_back(192);
-	message.push_back(5);
-	midiout->sendMessage(&message);
-	SLEEP(500);
-	message[0] = 0xF1;
-	message[1] = 60;
-	midiout->sendMessage(&message);
-	volumeMessage(midiout);
-	unsigned int grouptick = 0;
+    //channel -> instrument
+    std::map<int, int> current_active_instruments;
+    //abs ticks -> notes
+    std::map<unsigned int, const Note *> node_duration;
+    // instrument van huidige node
+    int instrument;
+    //huidige tick
+    unsigned int current_tick = 0;
+    //aantal sleep - ticks
+    unsigned int sleep_ticks;
+    //aantal nodes dat gestopt is
+    int todelete;
+    //minimum van de huidige groep
+    unsigned int minim;
+    openPort(midiout);
+    // Program change: 192, 5
+    message.push_back(192);
+    message.push_back(5);
+    midiout->sendMessage(&message);
+    SLEEP(500);
+    message[0] = 0xF1;
+    message[1] = 60;
+    midiout->sendMessage(&message);
+    volumeMessage(midiout);
+    unsigned int next_grouptick = 0;
 
-	std::map<unsigned int, const Note*>::iterator map_it;
-	if (markov_order == 1)
-	{
-		std::vector<Note> current_group_of_nodes = music_markov_chain.getRandomState();
+    std::map<unsigned int, const Note *>::iterator map_it;
+    std::vector<Note> current_group_of_nodes;
+    std::vector<std::vector<Note>> current_state;
+    if (markov_order == 1 ) {
+        current_group_of_nodes = music_markov_chain.getRandomState();
+    }
+    else {
+        current_state = music_variable_to_first_chain.getRandomState();
+        current_group_of_nodes = current_state.back();
+    }
 
-		while (playing_inf)
-		{
-			SLEEP(tempo_sleep);
-			current_tick += tempo_sleep;
-			todelete = 0;
-			minim = findMinDuration(current_group_of_nodes) + current_tick;
+        while (playing_inf) {
 
-			for (const auto& node : current_group_of_nodes)
-			{
-				instrument = node.instrument;
-				node_duration[node.duration + current_tick] = &node;
-				if (volume_changed)
-				{
-					volumeMessage(midiout);
-				}
-				if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
-					current_active_instruments[node.track] == instrument)
-				{
-					current_active_instruments[node.track] = instrument;
-					message.makeTimbre(node.track, instrument);
-					midiout->sendMessage(&message);
-				}
-				message.makeNoteOn(node.track, node.key, node.velocity);
-				midiout->sendMessage(&message);
-			}
-			for (const auto& node:node_duration)
-			{
+            SLEEP(tempo_sleep);
+            current_tick += tempo_sleep;
+            todelete = 0;
+            next_grouptick = findMinDelay(current_group_of_nodes);
+            minim = findMinDelay(current_group_of_nodes) + current_tick;
 
-				if (node.first >= minim)
-				{
-					break;
-				}
-				if (current_tick < node.first)
-				{
-					sleep_ticks = (node.first - current_tick);
-					SLEEP(TicksToMs(sleep_ticks));
+            for (const auto &node : current_group_of_nodes) {
+                instrument = node.instrument;
+                node_duration[(double)node.duration  + current_tick] = &node; //*120/tempo
+                if (volume_changed) {
+                    volumeMessage(midiout);
+                }
+                if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
+                    current_active_instruments[node.track] == instrument) {
+                    current_active_instruments[node.track] = instrument;
+                    message.makeTimbre(node.track, instrument);
+                    midiout->sendMessage(&message);
+                }
+                message.makeNoteOn(node.track, node.key, node.velocity);
+                midiout->sendMessage(&message);
+            }
+            for (const auto &node:node_duration) {
+
+                if (node.first >= minim) {
+                    break;
+                }
+                if (current_tick < node.first) {
+                    sleep_ticks = (node.first - current_tick);
+                    SLEEP(TicksToMs((double)sleep_ticks)); //*120/tempo
 //                    SLEEP(10 * 1000.00);
-					//                prev_tick = current_tick;
+                    //                prev_tick = current_tick;
 
-				}
-				else
-				{
-					message.makeNoteOff(node.second->track, node.second->key, node.second->velocity);
-					midiout->sendMessage(&message);
+                } else {
+                    message.makeNoteOff(node.second->track, node.second->key, node.second->velocity);
+                    midiout->sendMessage(&message);
 
-					todelete++;
-				}
-				current_tick = std::max(node.first, current_tick);
+                    todelete++;
+                }
+                current_tick = std::max(node.first, current_tick);
 
-			}
-			current_group_of_nodes = music_markov_chain.getNextState(current_group_of_nodes);
-			if (todelete > 0)
-			{
-				map_it = node_duration.begin();
-				std::advance(map_it, todelete);
-				node_duration.erase(node_duration.begin(), map_it);
-			}
-		}
-	}
-	else if (markov_order > 1)
-	{
-		std::vector<std::vector<Note>> current_state = music_variable_to_first_chain.getRandomState();
-		std::vector<Note> current_group_of_nodes = current_state.back();
-		while (playing_inf)
-		{
-			current_group_of_nodes = current_state.back();
-			SLEEP(tempo_sleep);
-			current_tick += tempo_sleep;
-			todelete = 0;
-			minim = findMinDuration(current_group_of_nodes) + current_tick;
-
-			for (const auto& node : current_group_of_nodes)
-			{
-				instrument = node.instrument;
-				node_duration[node.duration + current_tick] = &node;
-				if (volume_changed)
-				{
-					volumeMessage(midiout);
-				}
-				if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
-					current_active_instruments[node.track] == instrument)
-				{
-					current_active_instruments[node.track] = instrument;
-					message.makeTimbre(node.track, instrument);
-					midiout->sendMessage(&message);
-				}
-				message.makeNoteOn(node.track, node.key, node.velocity);
-				midiout->sendMessage(&message);
-
-//            SLEEP( 500 );
-			}
-			for (const auto& node:node_duration)
-			{
-//            current_tick += tempo_sleep;
-//            SLEEP( tempo_sleep);
-
-				if (node.first >= minim)
-				{
-					break;
-				}
-				if (current_tick < node.first)
-				{
-					sleep_ticks = (node.first - current_tick);
-//                if (minim >= node.first) {
-//                    minim = findMinDuration(current_group_of_nodes) + current_tick;
-//                    SLEEP(TicksToSecondsDouble(sleep_ticks) * 1000.00);
-//                    current_tick += sleep_ticks;
-//                    break;
-//                }
-
-					SLEEP(TicksToMs(sleep_ticks) * 1000.00);
-					//                prev_tick = current_tick;
-
-				}
-				else
-				{
-					message.makeNoteOff(node.second->track, node.second->key, node.second->velocity);
-					midiout->sendMessage(&message);
-
-					todelete++;
-				}
-				current_tick = std::max(node.first, current_tick);
-
-			}
-			current_state = music_variable_to_first_chain.getNextState(current_state);
-			if (todelete > 0)
-			{
-				map_it = node_duration.begin();
-				std::advance(map_it, todelete);
-				node_duration.erase(node_duration.begin(), map_it);
-			}
-		}
-	}
+            }
+            if (markov_order == 1) {
+                current_group_of_nodes = music_markov_chain.getNextState(current_group_of_nodes);
+            }
+            else if (markov_order > 1) {
+                current_state = music_variable_to_first_chain.getNextState(current_state);
+                current_group_of_nodes = current_state.back();
+            }
+            if (todelete > 0) {
+                map_it = node_duration.begin();
+                std::advance(map_it, todelete);
+                node_duration.erase(node_duration.begin(), map_it);
+            }
+        }
 cleanup:
-	delete midiout;
-	return;
+    delete midiout;
+    return;
 }
 
 void MusyGen::openPort(RtMidiOut* midiout)
@@ -655,11 +584,27 @@ void MusyGen::openPort(RtMidiOut* midiout)
 void MusyGen::volumeMessage(RtMidiOut* midiout)
 {
 	std::vector<unsigned char> message;
-	message.emplace_back(0xB0);
-	message.emplace_back(0x07);
-	message.emplace_back(volume);
-	volume_changed = false;
+	//SysEx
+	message.emplace_back(0xF0);
+	//Realtime
+    message.emplace_back(0x7F);
+    //The SysEx channel. Could be from 0x00 to 0x7F.
+    message.emplace_back(0x7F);
+    //Sub-ID -- Device Control
+    message.emplace_back(0x04);
+    //Sub-ID2 -- Master Volume
+    message.emplace_back(0x01);
+    unsigned int LSB = volume & 0x7F;
+    //Bits 0 to 6 of a 14-bit volume
+    message.emplace_back(LSB);
+    unsigned int MSB = volume & 0x3F80;
+    MSB >>= 7;
+    //Bits 7 to 13 of a 14-bit volume
+    message.emplace_back(MSB);
+    //End of SysEx
+    message.emplace_back(0xF);
 
+	volume_changed = false;
 	midiout->sendMessage(&message);
 }
 
@@ -685,7 +630,7 @@ void MusyGen::endNote(char key, char velocity, RtMidiOut* midiout)
 
 void MusyGen::changeVolume(const int _volume)
 {
-	volume = std::min(std::max(_volume, 0), 127);
+	volume = (std::min(std::max(_volume,0),100)*((double)16383.00/100.00));
 	volume_changed = true;
 }
 
@@ -701,10 +646,14 @@ void MusyGen::setPlayInf(bool inf)
 
 int MusyGen::findMinDelay(std::vector<Note>& note_group)
 {
+    int count = 0;
+    int delay = 0;
 	int min = std::numeric_limits<int>::max();
 	for (const Note& note:note_group)
 	{
+	    count ++;
+	    delay += note.next_note_delay;
 		min = std::min(note.next_note_delay, min);
 	}
-	return min;
+	return (min);
 }
