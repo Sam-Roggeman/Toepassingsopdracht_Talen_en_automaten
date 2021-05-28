@@ -12,6 +12,8 @@
 #include <iomanip>
 #include "../libs/RTMidi//include/RtMidi.h"
 
+
+
 // Platform-dependent sleep routines.
 #if defined(WIN32)
 #include <windows.h>
@@ -30,7 +32,6 @@ public:
 	int TPQ = 0;
 	std::map<int, int> instrument_to_track_map;
 	double tempo = 0;
-
 	MarkovChain<std::vector<Note>> music_markov_chain;
 	MarkovChain<std::vector<std::vector<Note>>> music_variable_to_first_chain;
 	smf::MidiFile generated_midifile;
@@ -39,6 +40,8 @@ public:
 	int volume = 50;
 	bool volume_changed = false;
 	bool playing_inf = false;
+    bool paused_inf = false;
+
 
 public:
 	MusyGen();
@@ -89,6 +92,10 @@ private:
     double TicksToMs(double ticks);
 
     static int findMinDelay(std::vector<Note> &note_group);
+
+    void pauseMessage(RtMidiOut *pOut);
+
+    void startMessage(RtMidiOut *pOut);
 };
 
 
