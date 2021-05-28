@@ -9,6 +9,20 @@ Mainwindow::Mainwindow(QWidget *parent) :
     ui(new Ui::Mainwindow)
 {
     ui->setupUi(this);
+    this->setFixedSize(720,573);
+    setWindowTitle("MusyGen");
+    QString qString("../Icon/Icon.png");
+    QIcon qIcon(qString);
+    setWindowIcon(qIcon);
+    ui->pushButton->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
+    ui->pushButton_2->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
+    ui->Infinite->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
+    ui->SetTime->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
+    ui->Export->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
+    ui->New_generate->move(getnewpoint(ui->pushButton_2,-80,this->width(),this->height()));
+    ui->diff_order->move(getnewpoint(ui->pushButton_2,-40,this->width(),this->height()));
+    ui->diff_time->move(getnewpoint(ui->pushButton_2,0,this->width(),this->height()));
+    ui->pushButton_4->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
 }
 
 Mainwindow::~Mainwindow()
@@ -25,7 +39,7 @@ void Mainwindow::on_pushButton_clicked()
         musyGen = new MusyGen;
         std::string a = fileName.toStdString();
         musyGen->importMidiFile(a);
-        ui->hallo->setReadOnly(true);
+        ui->plainTextEdit->setReadOnly(true);
     }
 
 }
@@ -43,7 +57,7 @@ void Mainwindow::on_stackedWidget_currentChanged(int arg1)
 void Mainwindow::on_confirm_clicked()
 {
     this->on_stackedWidget_currentChanged(2);
-    QString a = this->ui->textEdit->toPlainText();
+    QString a = this->ui->order_keuze->toPlainText();
     musyGen->setMarkovOrder(std::stoi(a.toStdString()));
     musyGen->trainMarkovModel();
 }
@@ -53,17 +67,11 @@ void Mainwindow::on_SetTime_clicked()
     this->on_stackedWidget_currentChanged(3);
 }
 
-void Mainwindow::on_hours_clicked()
-{
-    double uur = this->ui->doubleSpinBox->value();
-    double aantal_sec = uur*3600;
-    musyGen->generateMusic(aantal_sec);
-    this->on_stackedWidget_currentChanged(5);
-}
-
 void Mainwindow::on_minutes_clicked()
 {
-    double minuten = this->ui->doubleSpinBox->value();
+    QString qString = this->ui->plainTextEdit_2->toPlainText();
+    std::string string = qString.toStdString();
+    double minuten =  std::stod(string);
     double aantal_sec = minuten*60;
     musyGen->generateMusic(aantal_sec);
     this->on_stackedWidget_currentChanged(5);
@@ -71,7 +79,9 @@ void Mainwindow::on_minutes_clicked()
 
 void Mainwindow::on_seconds_clicked()
 {
-    double seconden = this->ui->doubleSpinBox->value();
+    QString qString = this->ui->plainTextEdit_2->toPlainText();
+    std::string string = qString.toStdString();
+    double seconden = std::stod(string);
     musyGen->generateMusic(seconden);
     this->on_stackedWidget_currentChanged(5);
 }
@@ -82,6 +92,9 @@ void Mainwindow::on_Infinite_clicked()
     ui->Start->setEnabled(true);
     ui->Pause->setEnabled(false);
     ui->Stop->setEnabled(false);
+    ui->widget->setmstarttime(QDateTime::currentDateTime());
+    ui->verticalSlider->setSliderPosition(75);
+    musyGen->changeVolume(ui->verticalSlider->sliderPosition());
 }
 
 void Mainwindow::on_Start_clicked()
@@ -94,6 +107,7 @@ void Mainwindow::on_Start_clicked()
         thread1 = std::thread(&MusyGen::playMusicInfinitely,musyGen);
     }
     musyGen->setPlayInf(true);
+    musyGen->setPause(false);
 }
 
 void Mainwindow::on_Stop_clicked()
@@ -111,6 +125,7 @@ void Mainwindow::on_Pause_clicked()
     ui->widget->pause();
     ui->Start->setEnabled(true);
     ui->Pause->setEnabled(false);
+    musyGen->setPause(true);
 }
 
 void Mainwindow::on_Export_clicked()
@@ -152,17 +167,11 @@ void Mainwindow::on_pushButton_5_clicked()
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
     ui->pushButton_2->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->pushButton_3->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
     ui->pushButton_4->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
     ui->Stop->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
     ui->Start->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->doubleSpinBox->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->hallo->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
     ui->stackedWidget->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
@@ -192,6 +201,9 @@ void Mainwindow::on_pushButton_5_clicked()
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
     ui->pushButton_6->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+    ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+
 }
 
 void Mainwindow::on_pushButton_6_clicked()
@@ -202,17 +214,11 @@ void Mainwindow::on_pushButton_6_clicked()
                               "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
     ui->pushButton_2->setStyleSheet("QPushButton { background-color: grey; }\n"
                                     "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->pushButton_3->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                    "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
     ui->pushButton_4->setStyleSheet("QPushButton { background-color: grey; }\n"
                                     "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
     ui->Stop->setStyleSheet("QPushButton { background-color: grey; }\n"
                             "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
     ui->Start->setStyleSheet("QPushButton { background-color: grey; }\n"
-                             "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->doubleSpinBox->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                     "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->hallo->setStyleSheet("QPushButton { background-color: grey; }\n"
                              "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
     ui->stackedWidget->setStyleSheet("QPushButton { background-color: grey; }\n"
                                      "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
@@ -242,4 +248,29 @@ void Mainwindow::on_pushButton_6_clicked()
                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
     ui->pushButton_6->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+    ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                  "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+}
+
+
+
+void Mainwindow::on_verticalSlider_valueChanged(int value)
+{
+    musyGen->changeVolume(value);
+
+}
+
+QPoint Mainwindow::getnewpoint(QPushButton *button,int offset,int width, int height) {
+    int dx = button->width()/2;
+    int dy = button->height()/2;
+    QPoint qPoint((width/2)-dx,(height/2)-dy+offset);
+    return qPoint;
+}
+
+void Mainwindow::resizeEvent(QResizeEvent * event)
+{
+
+    ui->pushButton->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
+    ui->pushButton_2->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
+
 }

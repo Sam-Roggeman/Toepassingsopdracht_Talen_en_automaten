@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 6.1.0
+** Created by: Qt User Interface Compiler version 6.0.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -12,12 +12,12 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDialog>
-#include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QStackedWidget>
-#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
 #include <stopwatch.h>
 
@@ -31,22 +31,22 @@ public:
     QPushButton *pushButton;
     QPushButton *pushButton_2;
     QWidget *page_2;
-    QTextEdit *textEdit;
-    QTextEdit *hallo;
     QPushButton *confirm;
+    QPlainTextEdit *plainTextEdit;
+    QPlainTextEdit *order_keuze;
     QWidget *page_3;
     QPushButton *Infinite;
     QPushButton *SetTime;
     QWidget *page_4;
-    QDoubleSpinBox *doubleSpinBox;
     QPushButton *minutes;
-    QPushButton *hours;
     QPushButton *seconds;
+    QPlainTextEdit *plainTextEdit_2;
     QWidget *page_5;
     StopWatch *widget;
     QPushButton *Start;
     QPushButton *Stop;
     QPushButton *Pause;
+    QSlider *verticalSlider;
     QWidget *page_6;
     QPushButton *Export;
     QWidget *page_7;
@@ -55,11 +55,10 @@ public:
     QPushButton *diff_time;
     QPushButton *pushButton_4;
     QLineEdit *lineEdit;
-    QWidget *widget1;
+    QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout;
     QPushButton *pushButton_5;
     QPushButton *pushButton_6;
-    QPushButton *pushButton_3;
 
     void setupUi(QDialog *Mainwindow)
     {
@@ -68,31 +67,30 @@ public:
         Mainwindow->resize(720, 573);
         stackedWidget = new QStackedWidget(Mainwindow);
         stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
-        stackedWidget->setGeometry(QRect(0, 30, 721, 571));
+        stackedWidget->setGeometry(QRect(0, 42, 720, 531));
         stackedWidget->setStyleSheet(QString::fromUtf8(""));
         page = new QWidget();
         page->setObjectName(QString::fromUtf8("page"));
         pushButton = new QPushButton(page);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(310, 290, 93, 28));
+        pushButton->setGeometry(QRect(320, 260, 93, 28));
         pushButton->setStyleSheet(QString::fromUtf8("background-color = rgb(200,0,0)"));
         pushButton_2 = new QPushButton(page);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(310, 340, 93, 28));
+        pushButton_2->setGeometry(QRect(320, 300, 93, 28));
         pushButton_2->setStyleSheet(QString::fromUtf8(""));
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
         page_2->setObjectName(QString::fromUtf8("page_2"));
-        textEdit = new QTextEdit(page_2);
-        textEdit->setObjectName(QString::fromUtf8("textEdit"));
-        textEdit->setGeometry(QRect(300, 240, 51, 51));
-        hallo = new QTextEdit(page_2);
-        hallo->setObjectName(QString::fromUtf8("hallo"));
-        hallo->setGeometry(QRect(250, 170, 161, 51));
-        hallo->setStyleSheet(QString::fromUtf8("background-color: rgb(0, 255, 255)"));
         confirm = new QPushButton(page_2);
         confirm->setObjectName(QString::fromUtf8("confirm"));
-        confirm->setGeometry(QRect(280, 310, 93, 28));
+        confirm->setGeometry(QRect(320, 310, 93, 28));
+        plainTextEdit = new QPlainTextEdit(page_2);
+        plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
+        plainTextEdit->setGeometry(QRect(300, 140, 121, 81));
+        order_keuze = new QPlainTextEdit(page_2);
+        order_keuze->setObjectName(QString::fromUtf8("order_keuze"));
+        order_keuze->setGeometry(QRect(340, 250, 31, 31));
         stackedWidget->addWidget(page_2);
         page_3 = new QWidget();
         page_3->setObjectName(QString::fromUtf8("page_3"));
@@ -105,18 +103,15 @@ public:
         stackedWidget->addWidget(page_3);
         page_4 = new QWidget();
         page_4->setObjectName(QString::fromUtf8("page_4"));
-        doubleSpinBox = new QDoubleSpinBox(page_4);
-        doubleSpinBox->setObjectName(QString::fromUtf8("doubleSpinBox"));
-        doubleSpinBox->setGeometry(QRect(340, 270, 62, 22));
         minutes = new QPushButton(page_4);
         minutes->setObjectName(QString::fromUtf8("minutes"));
-        minutes->setGeometry(QRect(320, 330, 93, 28));
-        hours = new QPushButton(page_4);
-        hours->setObjectName(QString::fromUtf8("hours"));
-        hours->setGeometry(QRect(210, 330, 93, 28));
+        minutes->setGeometry(QRect(270, 330, 93, 28));
         seconds = new QPushButton(page_4);
         seconds->setObjectName(QString::fromUtf8("seconds"));
-        seconds->setGeometry(QRect(430, 330, 93, 28));
+        seconds->setGeometry(QRect(380, 330, 93, 28));
+        plainTextEdit_2 = new QPlainTextEdit(page_4);
+        plainTextEdit_2->setObjectName(QString::fromUtf8("plainTextEdit_2"));
+        plainTextEdit_2->setGeometry(QRect(310, 260, 111, 51));
         stackedWidget->addWidget(page_4);
         page_5 = new QWidget();
         page_5->setObjectName(QString::fromUtf8("page_5"));
@@ -132,6 +127,10 @@ public:
         Pause = new QPushButton(page_5);
         Pause->setObjectName(QString::fromUtf8("Pause"));
         Pause->setGeometry(QRect(290, 330, 93, 28));
+        verticalSlider = new QSlider(page_5);
+        verticalSlider->setObjectName(QString::fromUtf8("verticalSlider"));
+        verticalSlider->setGeometry(QRect(540, 160, 22, 161));
+        verticalSlider->setOrientation(Qt::Vertical);
         stackedWidget->addWidget(page_5);
         page_6 = new QWidget();
         page_6->setObjectName(QString::fromUtf8("page_6"));
@@ -156,38 +155,33 @@ public:
         stackedWidget->addWidget(page_7);
         lineEdit = new QLineEdit(Mainwindow);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
-        lineEdit->setGeometry(QRect(-40, -10, 781, 61));
+        lineEdit->setGeometry(QRect(0, 0, 720, 51));
         lineEdit->setStyleSheet(QString::fromUtf8("background-color: rgb(43,43,43);\n"
 "color: rgb(255, 255, 255);\n"
 ""));
-        widget1 = new QWidget(Mainwindow);
-        widget1->setObjectName(QString::fromUtf8("widget1"));
-        widget1->setGeometry(QRect(0, 0, 295, 30));
-        horizontalLayout = new QHBoxLayout(widget1);
+        layoutWidget = new QWidget(Mainwindow);
+        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
+        layoutWidget->setGeometry(QRect(10, 10, 295, 30));
+        horizontalLayout = new QHBoxLayout(layoutWidget);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
-        pushButton_5 = new QPushButton(widget1);
+        pushButton_5 = new QPushButton(layoutWidget);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
         pushButton_5->setStyleSheet(QString::fromUtf8("\n"
 "background-color: rgb(232,228,228);"));
 
         horizontalLayout->addWidget(pushButton_5);
 
-        pushButton_6 = new QPushButton(widget1);
+        pushButton_6 = new QPushButton(layoutWidget);
         pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
         pushButton_6->setStyleSheet(QString::fromUtf8("\n"
 "background-color: rgb(232,228,228);"));
 
         horizontalLayout->addWidget(pushButton_6);
 
-        pushButton_3 = new QPushButton(widget1);
-        pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setStyleSheet(QString::fromUtf8("\n"
-"background-color: rgb(232,228,228);\n"
-""));
-
-        horizontalLayout->addWidget(pushButton_3);
-
+        lineEdit->raise();
+        stackedWidget->raise();
+        layoutWidget->raise();
 
         retranslateUi(Mainwindow);
 
@@ -202,23 +196,15 @@ public:
         Mainwindow->setWindowTitle(QCoreApplication::translate("Mainwindow", "Dialog", nullptr));
         pushButton->setText(QCoreApplication::translate("Mainwindow", "Generate", nullptr));
         pushButton_2->setText(QCoreApplication::translate("Mainwindow", "Exit", nullptr));
-        textEdit->setHtml(QCoreApplication::translate("Mainwindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", nullptr));
-        hallo->setHtml(QCoreApplication::translate("Mainwindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Choose a markovchain order between 1 and 5.</p></body></html>", nullptr));
         confirm->setText(QCoreApplication::translate("Mainwindow", "Confirm", nullptr));
+        plainTextEdit->setPlainText(QCoreApplication::translate("Mainwindow", "Choose a markovchain order between 1 and 5.", nullptr));
+        order_keuze->setPlainText(QCoreApplication::translate("Mainwindow", "1", nullptr));
         Infinite->setText(QCoreApplication::translate("Mainwindow", "Play Infinitely", nullptr));
         SetTime->setText(QCoreApplication::translate("Mainwindow", "Play for a Set Time", nullptr));
         minutes->setText(QCoreApplication::translate("Mainwindow", "In minutes", nullptr));
-        hours->setText(QCoreApplication::translate("Mainwindow", "In hours", nullptr));
         seconds->setText(QCoreApplication::translate("Mainwindow", "In seconds", nullptr));
+        plainTextEdit_2->setPlainText(QCoreApplication::translate("Mainwindow", "0,00\n"
+"", nullptr));
         Start->setText(QCoreApplication::translate("Mainwindow", "Start/Resume", nullptr));
         Stop->setText(QCoreApplication::translate("Mainwindow", "Stop", nullptr));
         Pause->setText(QCoreApplication::translate("Mainwindow", "Pause", nullptr));
@@ -230,7 +216,6 @@ public:
         lineEdit->setText(QString());
         pushButton_5->setText(QCoreApplication::translate("Mainwindow", "LightMode", nullptr));
         pushButton_6->setText(QCoreApplication::translate("Mainwindow", "DarkMode", nullptr));
-        pushButton_3->setText(QCoreApplication::translate("Mainwindow", "Help", nullptr));
     } // retranslateUi
 
 };

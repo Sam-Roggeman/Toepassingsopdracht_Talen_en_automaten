@@ -682,3 +682,7 @@ void MusyGen::startMessage(RtMidiOut *pOut) {
     message.emplace_back(0b11111010);
     pOut->sendMessage(&message);
 }
+
+void MusyGen::setPause(bool l) {
+    paused_inf = l;
+}
