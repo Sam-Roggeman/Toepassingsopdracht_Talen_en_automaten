@@ -504,6 +504,7 @@ void MusyGen::playMusicInfinitely()
                 message.makeNoteOff(channel, node.second->key,node.second->velocity);
                 midiout->sendMessage(&message);
             }
+            node_duration.clear();
 //            pauseMessage(midiout);
             while (paused_inf){
                 if (!playing_inf){
@@ -537,7 +538,6 @@ void MusyGen::playMusicInfinitely()
             }
             message.makeNoteOn(channel, node.key, node.velocity);
             midiout->sendMessage(&message);
-            node_duration.clear();
         }
         for (const auto &node:node_duration) {
             if (type == 0){
