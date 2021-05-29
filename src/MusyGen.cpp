@@ -501,7 +501,7 @@ void MusyGen::playMusicInfinitely()
                 else {
                     channel = node.second->track;
                 }
-                message.makeNoteOff(channel, node.second->key);
+                message.makeNoteOff(channel, node.second->key,node.second->velocity);
                 midiout->sendMessage(&message);
             }
             pauseMessage(midiout);
@@ -510,9 +510,6 @@ void MusyGen::playMusicInfinitely()
                     goto cleanup;
                 }
                 SLEEP(50);
-                if (!playing_inf){
-                    goto cleanup;
-                }
             }
             startMessage(midiout);
         }
@@ -538,7 +535,7 @@ void MusyGen::playMusicInfinitely()
                 message.makeTimbre(channel, instrument);
                 midiout->sendMessage(&message);
             }
-            message.makeNoteOn(channel, node.key+1, node.velocity);
+            message.makeNoteOn(channel, node.key, node.velocity);
             midiout->sendMessage(&message);
         }
         for (const auto &node:node_duration) {
