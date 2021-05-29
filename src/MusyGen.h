@@ -78,9 +78,9 @@ private:
 
 	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
 
-    int SecondsToTicks(double duration);
+    int SecondsToTicks(double duration) const;
 
-    int TicksToSeconds(double ticks);
+    int TicksToSeconds(double ticks) const;
 
     void startNote(char key, char velocity, RtMidiOut *midiout);
 
@@ -91,11 +91,11 @@ private:
 
     void openPort(RtMidiOut *midiout);
 
-    double TicksToMs(double ticks);
+    double TicksToMs(double ticks) const;
 
     static int findMinDelay(std::vector<Note> &note_group);
 
-    void pauseMessage(RtMidiOut *pOut);
+    static void pauseMessage(RtMidiOut *pOut);
 
     void startMessage(RtMidiOut *pOut);
 };
