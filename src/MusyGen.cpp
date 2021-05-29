@@ -500,6 +500,9 @@ void MusyGen::playMusicInfinitely()
                 SLEEP(250);
             }
             startMessage(midiout);
+            if (!playing_inf){
+                goto cleanup;
+            }
         }
 
         todelete = 0;
@@ -555,6 +558,7 @@ void MusyGen::playMusicInfinitely()
             sleep_ticks = (minim - current_tick);
             SLEEP(TicksToMs( sleep_ticks));
             current_tick += sleep_ticks;
+
         }
 
         if (markov_order == 1) {
