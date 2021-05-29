@@ -14,15 +14,27 @@ Mainwindow::Mainwindow(QWidget *parent) :
     QString qString("../Icon/Icon.png");
     QIcon qIcon(qString);
     setWindowIcon(qIcon);
-    ui->pushButton->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
-    ui->pushButton_2->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
-    ui->Infinite->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
-    ui->SetTime->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
-    ui->Export->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
-    ui->New_generate->move(getnewpoint(ui->pushButton_2,-80,this->width(),this->height()));
-    ui->diff_order->move(getnewpoint(ui->pushButton_2,-40,this->width(),this->height()));
-    ui->diff_time->move(getnewpoint(ui->pushButton_2,0,this->width(),this->height()));
-    ui->pushButton_4->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
+
+    ui->pushButton->move(getnewpoint(ui->pushButton,-40,this->width(),this->height(),0));
+    ui->pushButton_2->move(getnewpoint(ui->pushButton_2,0,this->width(),this->height(),0));
+    ui->Infinite->move(getnewpoint(ui->pushButton,-40,this->width(),this->height(),0));
+    ui->SetTime->move(getnewpoint(ui->pushButton_2,0,this->width(),this->height(),-15));
+    ui->Export->move(getnewpoint(ui->pushButton,0,this->width(),this->height(),0));
+    ui->New_generate->move(getnewpoint(ui->pushButton_2,-80,this->width(),this->height(),-15));
+    ui->diff_order->move(getnewpoint(ui->pushButton_2,-40,this->width(),this->height(),-15));
+    ui->diff_time->move(getnewpoint(ui->pushButton_2,0,this->width(),this->height(),-35));
+    ui->pushButton_4->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height(),0));
+    ui->order_keuze->move(getSpinboxPoint(ui->order_keuze,0,this->width(),this->height(),0));
+    ui->PlainTextEdit->move(getPlainTextPoint(ui->PlainTextEdit,-60,this->width(),this->height(),0));
+    ui->confirm->move(getnewpoint(ui->confirm,50,this->width(),this->height(),-1));
+    ui->textEdit->move(getPlainTextPoint(ui->textEdit,-30,this->width(),this->height(),0));
+    ui->minutes->move(getnewpoint(ui->minutes,40,this->width(),this->height(),-50));
+    ui->seconds->move(getnewpoint(ui->seconds,40,this->width(),this->height(),50));
+    ui->widget->move(getStopwatchpoint(ui->widget,-30,this->width(),this->height(),0));
+    ui->Pause->move(ui->Pause->x()+20,ui->Pause->y());
+    ui->Start->move(ui->Start->x()+30,ui->Start->y());
+    ui->PlainTextEdit->setFrameStyle(QFrame::NoFrame);
+    ui->PlainTextEdit->viewport()->setAutoFillBackground(false);
 }
 
 Mainwindow::~Mainwindow()
@@ -39,7 +51,7 @@ void Mainwindow::on_pushButton_clicked()
         musyGen = new MusyGen;
         std::string a = fileName.toStdString();
         musyGen->importMidiFile(a);
-        ui->plainTextEdit->setReadOnly(true);
+        ui->PlainTextEdit->setReadOnly(true);
     }
 
 }
@@ -57,8 +69,7 @@ void Mainwindow::on_stackedWidget_currentChanged(int arg1)
 void Mainwindow::on_confirm_clicked()
 {
     this->on_stackedWidget_currentChanged(2);
-    QString a = this->ui->order_keuze->toPlainText();
-    musyGen->setMarkovOrder(std::stoi(a.toStdString()));
+    musyGen->setMarkovOrder(this->ui->order_keuze->value());
     musyGen->trainMarkovModel();
 }
 
@@ -69,7 +80,7 @@ void Mainwindow::on_SetTime_clicked()
 
 void Mainwindow::on_minutes_clicked()
 {
-    QString qString = this->ui->plainTextEdit_2->toPlainText();
+    QString qString = this->ui->textEdit->toPlainText();
     std::string string = qString.toStdString();
     double minuten =  std::stod(string);
     double aantal_sec = minuten*60;
@@ -79,7 +90,7 @@ void Mainwindow::on_minutes_clicked()
 
 void Mainwindow::on_seconds_clicked()
 {
-    QString qString = this->ui->plainTextEdit_2->toPlainText();
+    QString qString = this->ui->textEdit->toPlainText();
     std::string string = qString.toStdString();
     double seconden = std::stod(string);
     musyGen->generateMusic(seconden);
@@ -113,6 +124,7 @@ void Mainwindow::on_Start_clicked()
 void Mainwindow::on_Stop_clicked()
 {
     ui->widget->stop();
+    musyGen->setPause(false);
     musyGen->setPlayInf(false);
     thread1.join();
 
@@ -161,98 +173,109 @@ void Mainwindow::on_pushButton_4_clicked()
 
 void Mainwindow::on_pushButton_5_clicked()
 {
-    ui->pushButton->setStyleSheet("QPushButton { background-color: grey; }\n"
+    if(dark){
+        ui->pushButton->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                      "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->widget->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->widget->setStyleSheet("QPushButton { background-color: grey; }\n"
+        ui->pushButton_2->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->pushButton_4->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->Stop->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->Start->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                 "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->stackedWidget->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                         "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->Export->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->pushButton_2->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->pushButton_4->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->Stop->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->Start->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->stackedWidget->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->Export->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->Infinite->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->New_generate->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->Pause->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->SetTime->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->confirm->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->diff_order->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->minutes->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->seconds->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->lineEdit->setStyleSheet("QLineEdit { background-color: grey; }\n"
-                                "QLineEdit::enabled { background-color: rgb(43,43,43); color: rgb(255, 255, 255);}\n");
-    ui->stackedWidget->setStyleSheet("QStackedWidget { background-color: grey; }\n"
-                                     "QStackedWidget::enabled { background-color: rgb(240,240,240);}\n");
-    ui->pushButton_5->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->pushButton_6->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-    ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->Infinite->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                    "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->New_generate->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->Pause->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                 "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->SetTime->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->confirm->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->diff_order->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                      "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->minutes->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->seconds->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->lineEdit->setStyleSheet("QLineEdit { background-color: grey; }\n"
+                                    "QLineEdit::enabled { background-color: rgb(43,43,43); color: rgb(255, 255, 255);}\n");
+        ui->stackedWidget->setStyleSheet("QStackedWidget { background-color: grey; }\n"
+                                         "QStackedWidget::enabled { background-color: rgb(240,240,240);}\n");
+        ui->pushButton_5->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                     "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
+        ui->PlainTextEdit->setStyleSheet("QTextEdit::enabled {color : rgb(0,0,0);}\n");
+        QString qString("../Icon/Icon.png");
+        QIcon qIcon(qString);
+        setWindowIcon(qIcon);
+        dark = false;
+        light = true;
+        QString qString1("DarkMode");
+        ui->pushButton_5->setText(qString1);
+    }
+    else{
 
-}
-
-void Mainwindow::on_pushButton_6_clicked()
-{
-    ui->pushButton->setStyleSheet("QPushButton { background-color: grey; }\n"
+        ui->pushButton->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                      "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->widget->setStyleSheet("QPushButton { background-color: grey; }\n"
                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->widget->setStyleSheet("QPushButton { background-color: grey; }\n"
-                              "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->pushButton_2->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                    "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->pushButton_4->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                    "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->Stop->setStyleSheet("QPushButton { background-color: grey; }\n"
-                            "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->Start->setStyleSheet("QPushButton { background-color: grey; }\n"
-                             "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->stackedWidget->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                     "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->Export->setStyleSheet("QPushButton { background-color: grey; }\n"
-                              "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->Infinite->setStyleSheet("QPushButton { background-color: grey; }\n"
+        ui->pushButton_2->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->pushButton_4->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->Stop->setStyleSheet("QPushButton { background-color: grey; }\n"
                                 "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->New_generate->setStyleSheet("QPushButton { background-color: grey; }\n"
+        ui->Start->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                 "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->stackedWidget->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                         "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->Export->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                  "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->Infinite->setStyleSheet("QPushButton { background-color: grey; }\n"
                                     "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->Pause->setStyleSheet("QPushButton { background-color: grey; }\n"
-                             "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->SetTime->setStyleSheet("QPushButton { background-color: grey; }\n"
-                               "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->confirm->setStyleSheet("QPushButton { background-color: grey; }\n"
-                               "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->diff_order->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->minutes->setStyleSheet("QPushButton { background-color: grey; }\n"
-                               "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->seconds->setStyleSheet("QPushButton { background-color: grey; }\n"
-                               "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->lineEdit->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                "QPushButton:enabled { background-color: rgb(240,240,240); color: rgb(255, 255, 255);}\n");
-    ui->stackedWidget->setStyleSheet("QStackedWidget { background-color: grey; }\n"
-                                     "QStackedWidget::enabled { background-color: rgb(43,43,43);}\n");
-    ui->pushButton_5->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->pushButton_6->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-    ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
-                                  "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->New_generate->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->Pause->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                 "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->SetTime->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->confirm->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->diff_order->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                      "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->minutes->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->seconds->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                   "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->lineEdit->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                    "QPushButton:enabled { background-color: rgb(240,240,240); color: rgb(255, 255, 255);}\n");
+        ui->stackedWidget->setStyleSheet("QStackedWidget { background-color: grey; }\n"
+                                         "QStackedWidget::enabled { background-color: rgb(43,43,43);}\n");
+        ui->pushButton_5->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                        "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
+                                     "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
+        ui->PlainTextEdit->setStyleSheet("QTextEdit::enabled {color : rgb(255,255,255);}\n");
+        QString qString("../Icon/Icon2.png");
+        QIcon qIcon(qString);
+        setWindowIcon(qIcon);
+        dark = true;
+        light = false;
+        QString qString1("LightMode");
+        ui->pushButton_5->setText(qString1);
+    }
+
 }
-
-
 
 void Mainwindow::on_verticalSlider_valueChanged(int value)
 {
@@ -260,17 +283,31 @@ void Mainwindow::on_verticalSlider_valueChanged(int value)
 
 }
 
-QPoint Mainwindow::getnewpoint(QPushButton *button,int offset,int width, int height) {
+QPoint Mainwindow::getnewpoint(QPushButton *button,int offset,int width, int height, int xoffset) {
     int dx = button->width()/2;
     int dy = button->height()/2;
-    QPoint qPoint((width/2)-dx,(height/2)-dy+offset);
+    QPoint qPoint((width/2)-dx+xoffset,(height/2)-dy+offset);
     return qPoint;
 }
 
-void Mainwindow::resizeEvent(QResizeEvent * event)
-{
-
-    ui->pushButton->move(getnewpoint(ui->pushButton,0,this->width(),this->height()));
-    ui->pushButton_2->move(getnewpoint(ui->pushButton_2,40,this->width(),this->height()));
-
+QPoint Mainwindow::getStopwatchpoint(StopWatch *button, int offset, int width, int height, int xoffset) {
+    int dx = button->width()/2;
+    int dy = button->height()/2;
+    QPoint qPoint((width/2)-dx+xoffset,(height/2)-dy+offset);
+    return qPoint;
 }
+
+QPoint Mainwindow::getSpinboxPoint(QSpinBox *button, int offset, int width, int height, int xoffset) {
+    int dx = button->width()/2;
+    int dy = button->height()/2;
+    QPoint qPoint((width/2)-dx+xoffset,(height/2)-dy+offset);
+    return qPoint;
+}
+
+QPoint Mainwindow::getPlainTextPoint(QTextEdit *button, int offset, int width, int height, int xoffset) {
+    int dx = button->width()/2;
+    int dy = button->height()/2;
+    QPoint qPoint((width/2)-dx+xoffset,(height/2)-dy+offset);
+    return qPoint;
+}
+

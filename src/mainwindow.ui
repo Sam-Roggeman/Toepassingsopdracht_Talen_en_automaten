@@ -22,6 +22,9 @@
      <height>531</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <property name="styleSheet">
     <string notr="true"/>
    </property>
@@ -66,8 +69,8 @@
     <widget class="QPushButton" name="confirm">
      <property name="geometry">
       <rect>
-       <x>320</x>
-       <y>310</y>
+       <x>340</x>
+       <y>290</y>
        <width>93</width>
        <height>28</height>
       </rect>
@@ -76,32 +79,56 @@
       <string>Confirm</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit">
-     <property name="geometry">
-      <rect>
-       <x>300</x>
-       <y>140</y>
-       <width>121</width>
-       <height>81</height>
-      </rect>
-     </property>
-     <property name="plainText">
-      <string>Choose a markovchain order between 1 and 5.</string>
-     </property>
-    </widget>
-    <widget class="QPlainTextEdit" name="order_keuze">
+    <widget class="QSpinBox" name="order_keuze">
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>250</y>
-       <width>31</width>
-       <height>31</height>
+       <y>240</y>
+       <width>42</width>
+       <height>22</height>
       </rect>
      </property>
-     <property name="plainText">
-      <string>1</string>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>5</number>
+     </property>
+     <property name="value">
+      <number>1</number>
      </property>
     </widget>
+    <widget class="QTextEdit" name="PlainTextEdit">
+     <property name="geometry">
+      <rect>
+       <x>293</x>
+       <y>140</y>
+       <width>131</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(232,228,228);</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Choose a markovchain order between 1 and 5.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <zorder>order_keuze</zorder>
+    <zorder>confirm</zorder>
+    <zorder>PlainTextEdit</zorder>
    </widget>
    <widget class="QWidget" name="page_3">
     <widget class="QPushButton" name="Infinite">
@@ -120,8 +147,8 @@
     <widget class="QPushButton" name="SetTime">
      <property name="geometry">
       <rect>
-       <x>290</x>
-       <y>280</y>
+       <x>300</x>
+       <y>260</y>
        <width>121</width>
        <height>31</height>
       </rect>
@@ -158,18 +185,22 @@
       <string>In seconds</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit_2">
+    <widget class="QTextEdit" name="textEdit">
      <property name="geometry">
       <rect>
-       <x>310</x>
+       <x>320</x>
        <y>260</y>
-       <width>111</width>
+       <width>104</width>
        <height>51</height>
       </rect>
      </property>
-     <property name="plainText">
-      <string>0,00
-</string>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0,00&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </widget>
@@ -325,43 +356,23 @@ color: rgb(255, 255, 255);
     <string/>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QPushButton" name="pushButton_5">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>10</y>
-     <width>295</width>
-     <height>30</height>
+     <width>93</width>
+     <height>28</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QPushButton" name="pushButton_5">
-      <property name="styleSheet">
-       <string notr="true">
-background-color: rgb(232,228,228);</string>
-      </property>
-      <property name="text">
-       <string>LightMode</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_6">
-      <property name="styleSheet">
-       <string notr="true">
-background-color: rgb(232,228,228);</string>
-      </property>
-      <property name="text">
-       <string>DarkMode</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="text">
+    <string>DarkMode</string>
+   </property>
   </widget>
   <zorder>lineEdit</zorder>
-  <zorder>stackedWidget</zorder>
   <zorder>layoutWidget</zorder>
+  <zorder>pushButton_5</zorder>
+  <zorder>stackedWidget</zorder>
  </widget>
  <customwidgets>
   <customwidget>

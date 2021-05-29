@@ -13,6 +13,10 @@
 #include <QSlider>
 #include <QMainWindow>
 #include <QIcon>
+#include <QSpinBox>
+#include <QPlainTextEdit>
+#include <QPalette>
+#include <QColor>
 
 class StopWatch;
 
@@ -24,6 +28,8 @@ class Mainwindow : public QDialog
 {
     std::thread thread1;
     MusyGen*musyGen;
+    bool light = true;
+    bool dark = false;
     Q_OBJECT
 
 public:
@@ -31,16 +37,22 @@ public:
     ~Mainwindow();
 
 public slots:
-    QPoint getnewpoint(QPushButton*, int offset,int width, int height);
+    QPoint getnewpoint(QPushButton*, int offset,int width, int height, int xoffset);
+
+    QPoint getStopwatchpoint(StopWatch*,int offset,int width, int height, int xoffset);
+
+    QPoint getSpinboxPoint(QSpinBox*,int offset,int width, int height, int xoffset);
+
+    QPoint getPlainTextPoint(QTextEdit*, int offset,int width, int height, int xoffset);
+
+
+
 private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
 
     void on_stackedWidget_currentChanged(int arg1);
-
-    void resizeEvent(QResizeEvent* event);
-
 
     void on_confirm_clicked();
 
@@ -69,8 +81,6 @@ private slots:
     void on_pushButton_4_clicked();
 
     void on_pushButton_5_clicked();
-
-    void on_pushButton_6_clicked();
 
     void on_verticalSlider_valueChanged(int value);
 

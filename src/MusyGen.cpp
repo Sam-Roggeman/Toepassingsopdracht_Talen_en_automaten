@@ -497,12 +497,12 @@ void MusyGen::playMusicInfinitely()
         if (paused_inf){
             pauseMessage(midiout);
             while (paused_inf){
+                if (!playing_inf){
+                    goto cleanup;
+                }
                 SLEEP(250);
             }
             startMessage(midiout);
-            if (!playing_inf){
-                goto cleanup;
-            }
         }
 
         todelete = 0;
