@@ -10,6 +10,9 @@
 #include <QString>
 #include "MusyGen.h"
 #include <thread>
+#include <QSlider>
+#include <QMainWindow>
+#include <QIcon>
 
 class StopWatch;
 
@@ -27,6 +30,8 @@ public:
     explicit Mainwindow(QWidget *parent = nullptr);
     ~Mainwindow();
 
+public slots:
+    QPoint getnewpoint(QPushButton*, int offset,int width, int height);
 private slots:
     void on_pushButton_clicked();
 
@@ -34,11 +39,12 @@ private slots:
 
     void on_stackedWidget_currentChanged(int arg1);
 
+    void resizeEvent(QResizeEvent* event);
+
+
     void on_confirm_clicked();
 
     void on_SetTime_clicked();
-
-    void on_hours_clicked();
 
     void on_minutes_clicked();
 
@@ -65,6 +71,8 @@ private slots:
     void on_pushButton_5_clicked();
 
     void on_pushButton_6_clicked();
+
+    void on_verticalSlider_valueChanged(int value);
 
 private:
     Ui::Mainwindow *ui;

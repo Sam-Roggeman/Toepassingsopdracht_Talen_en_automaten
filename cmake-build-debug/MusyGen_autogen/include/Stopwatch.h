@@ -19,6 +19,9 @@ class Mainwindow;
 
 class StopWatch : public QWidget {
 Q_OBJECT
+
+
+
 public:
     explicit StopWatch(QWidget*parent = 0)
             : QWidget(parent)
@@ -43,9 +46,10 @@ public:
     }
 
 public slots:
-    bool getmstop(){
-        return mstop;
-    };
+    void setmstarttime(QDateTime start){
+        mStartTime = start;
+    }
+
     void start(void)
     {
         mStartTime = QDateTime::currentDateTime();

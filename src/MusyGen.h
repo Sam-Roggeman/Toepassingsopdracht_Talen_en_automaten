@@ -68,6 +68,8 @@ public:
 
     void setPlayInf(bool inf);
 
+    void setPause(bool l);
+
 
 private:
 	static int findMaxDuration(const std::vector<Note>& note_group);
