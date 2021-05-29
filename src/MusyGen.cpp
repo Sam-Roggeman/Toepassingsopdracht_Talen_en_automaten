@@ -454,7 +454,8 @@ void MusyGen::playMusicInfinitely()
 	smf::MidiMessage message = smf::MidiMessage();
 	RtMidiOut* midiout = new RtMidiOut;
     openPort(midiout);
-
+    short int type = input_midifile.getType();
+    short int channel;
     //channel -> instrument
     std::map<int, int> current_active_instruments;
     //abs ticks -> notes
@@ -492,6 +493,7 @@ void MusyGen::playMusicInfinitely()
     }
 
     while (playing_inf) {
+
         if (paused_inf){
             pauseMessage(midiout);
             while (paused_inf){
@@ -505,24 +507,36 @@ void MusyGen::playMusicInfinitely()
         minim = findMinDelay(current_group_of_nodes) + current_tick;
 
         for (const auto &node : current_group_of_nodes) {
+            if (type == 0){
+                channel = node.channel;
+            }
+            else {
+                channel = node.track;
+            }
             instrument = node.instrument;
             node_duration[(node.duration + current_tick)] = &node;
             if (volume_changed) {
                 volumeMessage(midiout);
             }
-            if (current_active_instruments.find(node.track) == current_active_instruments.end() ||
-                current_active_instruments[node.track] != instrument) {
-                current_active_instruments[node.track] = instrument;
-                message.makeTimbre(node.channel, instrument);
+            if (current_active_instruments.find(channel) == current_active_instruments.end() ||
+                current_active_instruments[channel] != instrument) {
+                current_active_instruments[channel] = instrument;
+                message.makeTimbre(channel, instrument);
                 midiout->sendMessage(&message);
             }
-            message.makeNoteOn(node.channel, node.key, node.velocity);
+            message.makeNoteOn(channel, node.key, node.velocity);
             midiout->sendMessage(&message);
         }
         for (const auto &node:node_duration) {
+            if (type == 0){
+                channel = node.second->channel;
+            }
+            else {
+                channel = node.second->track;
+            }
             //als de note gestopt moet worden
             if (current_tick >= node.first) {
-                message.makeNoteOff(node.second->channel, node.second->key, node.second->velocity);
+                message.makeNoteOff(channel, node.second->key, node.second->velocity);
 
                 midiout->sendMessage(&message);
                 todelete++;
@@ -532,7 +546,7 @@ void MusyGen::playMusicInfinitely()
                 sleep_ticks = (double)(node.first - current_tick);
                 SLEEP(TicksToMs((double) sleep_ticks)); //*120/tempo
                 current_tick += sleep_ticks;
-                message.makeNoteOff(node.second->channel, node.second->key, node.second->velocity);
+                message.makeNoteOff(channel, node.second->key, node.second->velocity);
                 midiout->sendMessage(&message);
                 todelete++;
             } else break;
@@ -674,11 +688,11 @@ int MusyGen::findMinDelay(std::vector<Note>& note_group)
 
 void MusyGen::pauseMessage(RtMidiOut *pOut) {
     std::vector<unsigned char> message;
-    message.emplace_back(0b11111011);
+    message.emplace_back(0b11111100);
     pOut->sendMessage(&message);
 }
 void MusyGen::startMessage(RtMidiOut *pOut) {
     std::vector<unsigned char> message;
-    message.emplace_back(0b11111010);
+    message.emplace_back(0b11111011);
     pOut->sendMessage(&message);
 }
