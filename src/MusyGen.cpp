@@ -501,11 +501,11 @@ void MusyGen::playMusicInfinitely()
                 else {
                     channel = node.second->track;
                 }
-                message.makeNoteOff(channel, node.second->key,node.second->velocity);
+                message.makeNoteOff(channel, node.second->key);
                 midiout->sendMessage(&message);
             }
             node_duration.clear();
-//            pauseMessage(midiout);
+            pauseMessage(midiout);
             while (paused_inf){
                 if (!playing_inf){
                     goto cleanup;
@@ -700,11 +700,13 @@ int MusyGen::findMinDelay(std::vector<Note>& note_group)
 
 void MusyGen::pauseMessage(RtMidiOut *pOut) {
     std::vector<unsigned char> message;
-    message.emplace_back(0b10110000);
-    message.emplace_back(0xFF & 120);
-    message.emplace_back(0xFF & 0);
-
-    pOut->sendMessage(&message);
+    for (int i = 0; i<16;i++ ) {
+        message.resize(0);
+        message.emplace_back(0b10111111 & i);
+        message.emplace_back(0xFF & 120);
+        message.emplace_back(0xFF & 0);
+        pOut->sendMessage(&message);
+    }
     message.resize(0);
     message.emplace_back(0b11111100);
     pOut->sendMessage(&message);
