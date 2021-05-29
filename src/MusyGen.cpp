@@ -501,6 +501,9 @@ void MusyGen::playMusicInfinitely()
                     goto cleanup;
                 }
                 SLEEP(250);
+                if (!playing_inf){
+                    goto cleanup;
+                }
             }
             startMessage(midiout);
         }
@@ -693,14 +696,13 @@ int MusyGen::findMinDelay(std::vector<Note>& note_group)
 void MusyGen::pauseMessage(RtMidiOut *pOut) {
     std::vector<unsigned char> message;
     message.emplace_back(0b10110000);
-    message.emplace_back(0xFF & 124);
+    message.emplace_back(0xFF & 120);
     message.emplace_back(0xFF & 0);
+
     pOut->sendMessage(&message);
     message.resize(0);
     message.emplace_back(0b11111100);
     pOut->sendMessage(&message);
-
-
 }
 void MusyGen::startMessage(RtMidiOut *pOut) {
     std::vector<unsigned char> message;
