@@ -52,6 +52,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 
 		int current_note_group_ticks = 0;
 		bool is_first_note = true;
+
 		for (int event = 0; event < input_midifile[track].size(); event++)
 		{
 			// instrument
@@ -111,6 +112,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 
 void MusyGen::exportMidiFile(const std::string& filepath)
 {
+	    std::cout << generated_midifile.getFileDurationInSeconds() << std::endl;
 	generated_midifile.write(filepath);
 }
 
@@ -118,7 +120,6 @@ void MusyGen::exportInputMidiFile(const std::string& filename)
 {
 	notesToMidi(notes);
 
-//  USEFULL TO SEE DURATION BUT MESSES WITH THE FILE
 //    std::cout << generated_midifile.getFileDurationInSeconds() << std::endl;
 
 	exportMidiFile(filename);
@@ -402,7 +403,6 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 					generated_midifile.addController(track_nr, start_tick, note.channel, controller.first, controller.second);
 				}
 			}
-
 			generated_midifile.addNoteOn(track_nr, start_tick, note.channel, note.key, note.velocity);
 			generated_midifile.addNoteOff(track_nr, end_tick, note.channel, note.key, note.velocity);
 		}
