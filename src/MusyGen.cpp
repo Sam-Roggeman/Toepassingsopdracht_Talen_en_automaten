@@ -161,9 +161,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 
 void MusyGen::exportMidiFile(const std::string& filepath)
 {
-	std::ofstream outputfile(filepath);
-	generated_midifile.write(outputfile);
-	outputfile.close();
+	generated_midifile.write(filepath);
 }
 
 void MusyGen::exportInputMidiFile(const std::string& filename)
@@ -451,7 +449,6 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 
 void MusyGen::playMusicInfinitely()
 {
-    int v;
 	smf::MidiMessage message = smf::MidiMessage();
 	auto* midiout = new RtMidiOut;
     openPort(midiout);
@@ -480,8 +477,6 @@ void MusyGen::playMusicInfinitely()
 //    message[1] = 60;
 //    midiout->sendMessage(&message);
     volumeMessage(midiout);
-    SLEEP(1);
-    current_tick +=1;
 
     std::map<unsigned int, Note>::iterator map_it;
     std::vector<Note> current_group_of_nodes;
@@ -495,24 +490,30 @@ void MusyGen::playMusicInfinitely()
     }
 
     while (playing_inf) {
-        todelete = 0;
-        minim = findMinDelay(current_group_of_nodes) + current_tick;
         if (paused_inf){
-            delete midiout;
+            for (const auto &node:node_duration) {
+                if (type == 0){
+                    channel = node.second.channel;
+                }
+                else {
+                    channel = node.second.track;
+                }
+                message.makeNoteOff(channel, node.second.key);
+                midiout->sendMessage(&message);
+            }
             node_duration.clear();
+            pauseMessage(midiout);
             while (paused_inf){
                 if (!playing_inf){
                     goto cleanup;
                 }
                 SLEEP(50);
             }
-            midiout = new RtMidiOut;
-            openPort(midiout);
-
 //            startMessage(midiout);
         }
 
-
+        todelete = 0;
+        minim = findMinDelay(current_group_of_nodes) + current_tick;
 
         for (const auto &node : current_group_of_nodes) {
             if (type == 0){
@@ -522,6 +523,7 @@ void MusyGen::playMusicInfinitely()
                 channel = node.track;
             }
             instrument = node.instrument;
+            node_duration[(node.duration + current_tick)] = node;
             if (volume_changed) {
                 volumeMessage(midiout);
             }
@@ -530,14 +532,9 @@ void MusyGen::playMusicInfinitely()
                 current_active_instruments[channel] = instrument;
                 message.makeTimbre(channel, instrument);
                 midiout->sendMessage(&message);
-                SLEEP(1);
-                current_tick +=1;
             }
-            node_duration[(node.duration + current_tick)] = node;
             message.makeNoteOn(channel, node.key, node.velocity);
             midiout->sendMessage(&message);
-            SLEEP(1);
-            current_tick +=1;
         }
         for (const auto &node:node_duration) {
             if (type == 0){
@@ -551,19 +548,15 @@ void MusyGen::playMusicInfinitely()
                 message.makeNoteOff(channel, node.second.key);
 
                 midiout->sendMessage(&message);
-                SLEEP(1);
-                current_tick +=1;
                 todelete++;
             }
                 //anders sleep tot nieuwe groep of next note
             else if (node.first < minim) {
                 sleep_ticks =node.first - current_tick;
-                SLEEP(TicksToMs(sleep_ticks)); //*120/tempo
+                SLEEP(TicksToMs((double) sleep_ticks)); //*120/tempo
                 current_tick += sleep_ticks;
                 message.makeNoteOff(channel, node.second.key, node.second.velocity);
                 midiout->sendMessage(&message);
-                SLEEP(1);
-                current_tick +=1;
                 todelete++;
             } else break;
         }
