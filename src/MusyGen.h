@@ -89,7 +89,6 @@ private:
     void volumeMessage(RtMidiOut *midiout);
 
 
-    void openPort(RtMidiOut *midiout);
 
     double TicksToMs(double ticks) const;
 
@@ -98,6 +97,8 @@ private:
     static void pauseMessage(RtMidiOut *pOut);
 
     void startMessage(RtMidiOut *pOut);
+
+    int findPort(RtMidiOut *midiout);
 };
 
 

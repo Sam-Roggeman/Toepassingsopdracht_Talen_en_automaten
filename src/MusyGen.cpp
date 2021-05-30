@@ -412,7 +412,8 @@ void MusyGen::playMusicInfinitely()
 {
 	smf::MidiMessage message = smf::MidiMessage();
 	auto* midiout = new RtMidiOut;
-    openPort(midiout);
+    int port = findPort(midiout);
+    midiout->openPort(port);
     short int type = input_midifile.getType();
     short int channel;
     //channel -> instrument
@@ -438,6 +439,8 @@ void MusyGen::playMusicInfinitely()
 //    message[1] = 60;
 //    midiout->sendMessage(&message);
     volumeMessage(midiout);
+    SLEEP(1);
+    current_tick +=1;
 
     std::map<unsigned int, Note>::iterator map_it;
     std::vector<Note> current_group_of_nodes;
@@ -451,30 +454,22 @@ void MusyGen::playMusicInfinitely()
     }
 
     while (playing_inf) {
+        todelete = 0;
+        minim = findMinDelay(current_group_of_nodes) + current_tick;
         if (paused_inf){
-            for (const auto &node:node_duration) {
-                if (type == 0){
-                    channel = node.second.channel;
-                }
-                else {
-                    channel = node.second.track;
-                }
-                message.makeNoteOff(channel, node.second.key);
-                midiout->sendMessage(&message);
-            }
+            delete midiout;
             node_duration.clear();
-            pauseMessage(midiout);
             while (paused_inf){
                 if (!playing_inf){
                     goto cleanup;
                 }
                 SLEEP(50);
             }
-//            startMessage(midiout);
+            midiout = new RtMidiOut;
+            midiout->openPort(port);
         }
 
-        todelete = 0;
-        minim = findMinDelay(current_group_of_nodes) + current_tick;
+
 
         for (const auto &node : current_group_of_nodes) {
             if (type == 0){
@@ -484,18 +479,26 @@ void MusyGen::playMusicInfinitely()
                 channel = node.track;
             }
             instrument = node.instrument;
-            node_duration[(node.duration + current_tick)] = node;
             if (volume_changed) {
+                delete midiout;
+                midiout = new RtMidiOut;
+                midiout->openPort(port);
                 volumeMessage(midiout);
+
             }
             if (current_active_instruments.find(channel) == current_active_instruments.end() ||
                 current_active_instruments[channel] != instrument) {
                 current_active_instruments[channel] = instrument;
                 message.makeTimbre(channel, instrument);
                 midiout->sendMessage(&message);
+                SLEEP(1);
+                current_tick +=1;
             }
+            node_duration[(node.duration + current_tick)] = node;
             message.makeNoteOn(channel, node.key, node.velocity);
             midiout->sendMessage(&message);
+            SLEEP(1);
+            current_tick +=1;
         }
         for (const auto &node:node_duration) {
             if (type == 0){
@@ -509,15 +512,19 @@ void MusyGen::playMusicInfinitely()
                 message.makeNoteOff(channel, node.second.key);
 
                 midiout->sendMessage(&message);
+//                SLEEP(1);
+//                current_tick +=1;
                 todelete++;
             }
                 //anders sleep tot nieuwe groep of next note
             else if (node.first < minim) {
                 sleep_ticks =node.first - current_tick;
-                SLEEP(TicksToMs((double) sleep_ticks)); //*120/tempo
+                SLEEP(TicksToMs(sleep_ticks)); //*120/tempo
                 current_tick += sleep_ticks;
                 message.makeNoteOff(channel, node.second.key, node.second.velocity);
                 midiout->sendMessage(&message);
+//                SLEEP(1);
+//                current_tick +=1;
                 todelete++;
             } else break;
         }
@@ -544,7 +551,7 @@ cleanup:
     delete midiout;
 }
 
-void MusyGen::openPort(RtMidiOut* midiout)
+int MusyGen::findPort(RtMidiOut* midiout)
 {
 	std::string portName;
 	unsigned int i = 0, nPorts = midiout->getPortCount();
@@ -573,7 +580,7 @@ void MusyGen::openPort(RtMidiOut* midiout)
 	}
 
 	std::cout << "\n";
-	midiout->openPort(i);
+	return i;
 }
 
 
