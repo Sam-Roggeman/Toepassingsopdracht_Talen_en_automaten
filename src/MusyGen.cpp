@@ -17,7 +17,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 	notes.clear();
 	track_controllers.clear();
 
-	input_midifile.read(filepath.c_str());
+	input_midifile.read(filepath);
 
 	input_midifile.absoluteTicks();
 	input_midifile.doTimeAnalysis();
@@ -34,20 +34,20 @@ void MusyGen::importMidiFile(const std::string& filepath)
 	for (int track = 0; track < input_midifile.getTrackCount(); track++)
 	{
 		// controllers at the start of the track
-		for (int event = 0; event < input_midifile[track].size(); event++)
-		{
-			if (input_midifile[track][event].isController())
-			{
-				track_controllers[track].emplace_back(std::make_pair(
-						input_midifile[track][event].getControllerValue(),
-						input_midifile[track][event].getControllerNumber()
-				));
-			}
-			if (input_midifile[track][event].isNoteOn())
-			{
-				break;
-			}
-		}
+//		for (int event = 0; event < input_midifile[track].size(); event++)
+//		{
+//			if (input_midifile[track][event].isController())
+//			{
+//				track_controllers[track].emplace_back(std::make_pair(
+//						input_midifile[track][event].getControllerNumber(),
+//						input_midifile[track][event].getControllerValue()
+//				));
+//			}
+//			if (input_midifile[track][event].isNoteOn())
+//			{
+//				break;
+//			}
+//		}
 		controllers.clear();
 
 		int current_note_group_ticks = 0;
@@ -69,10 +69,13 @@ void MusyGen::importMidiFile(const std::string& filepath)
 			}
 
 			// controller
-			if (input_midifile[track][event].isController())
-			{
-				controllers.emplace_back(std::make_pair(input_midifile[track][event].getControllerValue(),input_midifile[track][event].getControllerNumber()));
-			}
+//			if (input_midifile[track][event].isController())
+//			{
+//				controllers.emplace_back(std::make_pair(
+//						input_midifile[track][event].getControllerNumber(),
+//						input_midifile[track][event].getControllerValue()
+//						));
+//			}
 
 			if (input_midifile[track][event].isNoteOn())
 			{
@@ -358,7 +361,6 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 
 	// adds tempo
 	generated_midifile.addTempo(0, 0, tempo);
-	generated_midifile.addTrackName(0, 0, "Trackname");
 
 	int current_instrument = 0;
 	int current_tempo = 0;
@@ -583,7 +585,6 @@ int MusyGen::findPort(RtMidiOut* midiout)
 	return i;
 }
 
-
 void MusyGen::volumeMessage(RtMidiOut* midiout)
 {
 	std::vector<unsigned char> message;
@@ -620,8 +621,6 @@ void MusyGen::startNote(char key, char velocity, RtMidiOut* midiout)
 
 	midiout->sendMessage(&message);
 }
-
-
 
 void MusyGen::endNote(char key, char velocity, RtMidiOut* midiout)
 {

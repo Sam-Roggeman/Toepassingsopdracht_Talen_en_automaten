@@ -12,20 +12,18 @@
 
 int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
-    Mainwindow w;
-    w.show();
-    return a.exec();
+//    QApplication a(argc, argv);
+//    Mainwindow w;
+//    w.show();
+//    return a.exec();
 
 //	smf::MidiFile midifile;
 //	std::string midi_file_name = "twinkle_twinkle";
-//	midifile.read("../input_files/midi/" + midi_file_name + ".mid");
+//	midifile.read("./../midi_files/input_files/plastic_love.mid");
 //	midifile.doTimeAnalysis();
 //	midifile.linkNotePairs();
 //
-//	std::ofstream outputfile("twinkle_twinkle_export2.mid");
-//	midifile.write(outputfile);
-//	outputfile.close();
+//	midifile.write("./../midi_files/output_files/plastic_love_export.mid");
 
 // 	std::cout << midifile << std::endl;
 //
@@ -48,14 +46,14 @@ int main(int argc, char* argv[])
 //		}
 //	}
 
-//	MusyGen sys;
-////	sys.setPlayInf(true);
-//	sys.importMidiFile("./../midi_files/input_files/Never.mid"); // Super Mario 64 - Dire Dire Docks.mid
-//	sys.setMarkovOrder(1);
-//	sys.trainMarkovModel();
+	MusyGen sys;
+//	sys.setPlayInf(true);
+	sys.importMidiFile("./../midi_files/input_files/plastic_love.mid"); // Super Mario 64 - Dire Dire Docks.mid
+	sys.setMarkovOrder(2);
+	sys.trainMarkovModel();
 //	sys.playMusicInfinitely();
-//	sys.generateMusic(180);
-//	sys.exportMidiFile("./../midi_files/output_files/Never.mid");
+	sys.generateMusic(180);
+	sys.exportMidiFile("./../midi_files/output_files/plastic_love_export.mid");
 
 //	std::cout << sys.generated_midifile << std::endl;
 //    std::cout << sys.input_midifile << std::endl;
