@@ -49,12 +49,12 @@ int main(int argc, char* argv[])
 //	}
 
 //	MusyGen sys;
-//	sys.setPlayInf(true);
+////	sys.setPlayInf(true);
 //	sys.importMidiFile("./../midi_files/input_files/Never.mid"); // Super Mario 64 - Dire Dire Docks.mid
 //	sys.setMarkovOrder(1);
 //	sys.trainMarkovModel();
 //	sys.playMusicInfinitely();
-//	sys.generateMusic(120);
+//	sys.generateMusic(180);
 //	sys.exportMidiFile("./../midi_files/output_files/Never.mid");
 
 //	std::cout << sys.generated_midifile << std::endl;

@@ -31,7 +31,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 	int tempo_count = 0;
 	double tempo_sum = 0;
 
-	for (int track = 0; track < tracks; track++)
+	for (int track = 0; track < input_midifile.getTrackCount(); track++)
 	{
 		// controllers at the start of the track
 		for (int event = 0; event < input_midifile[track].size(); event++)
@@ -354,7 +354,7 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	generated_midifile.setTicksPerQuarterNote(TPQ);
 
 	// adds tracks with notes
-	generated_midifile.addTracks(tracks - 1);
+	generated_midifile.addTracks(input_midifile.getTrackCount() - 1);
 
 	// adds tempo
 	generated_midifile.addTempo(0, 0, tempo);

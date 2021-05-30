@@ -28,7 +28,6 @@ class MusyGen
 public:
 	smf::MidiFile input_midifile;
 	std::map<int, std::vector<Note>> notes;
-	int tracks = 0;
 	int TPQ = 0;
 	double tempo = 0;
 	std::map<int, std::vector<std::pair<int, int>>> track_controllers;
