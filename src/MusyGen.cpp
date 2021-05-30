@@ -363,6 +363,15 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	int current_instrument = 0;
 	int current_tempo = 0;
 
+	// start controllers
+	for (const auto& track : track_controllers)
+	{
+		for (const auto& controller : track.second)
+		{
+			generated_midifile.addController(0, 0, 0, controller.first, controller.second);
+		}
+	}
+
 	for (const auto& note_group : generated_notes)
 	{
 		for (const auto& note : note_group.second)
