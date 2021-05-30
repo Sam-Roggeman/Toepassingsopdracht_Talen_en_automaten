@@ -30,8 +30,8 @@ public:
 	std::map<int, std::vector<Note>> notes;
 	int tracks = 0;
 	int TPQ = 0;
-	std::map<int, int> instrument_to_track_map;
 	double tempo = 0;
+	std::map<int, std::vector<std::pair<int, int>>> track_controllers;
 	MarkovChain<std::vector<Note>> music_markov_chain;
 	MarkovChain<std::vector<std::vector<Note>>> music_variable_to_first_chain;
 	smf::MidiFile generated_midifile;

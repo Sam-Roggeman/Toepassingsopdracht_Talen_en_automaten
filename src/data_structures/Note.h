@@ -4,6 +4,7 @@
 
 #include <tuple>
 #include <string>
+#include <vector>
 
 class Note
 {

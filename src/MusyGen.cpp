@@ -23,140 +23,87 @@ void MusyGen::importMidiFile(const std::string& filepath)
 	input_midifile.doTimeAnalysis();
 	input_midifile.linkNotePairs();
 	TPQ = input_midifile.getTicksPerQuarterNote();
-	tempo = 120;
-    unsigned int channel;
-	tracks = input_midifile.getTrackCount();
-    //channel -> instrument
-    std::map<int, int> inst_per_channel;
-	if (tracks == 1)
+
+	std::vector<std::pair<int, int>> controllers;
+	int current_instrument = 0;
+	double current_tempo = 0;
+
+	int tempo_count = 0;
+	double tempo_sum = 0;
+
+	for (int track = 0; track < tracks; track++)
 	{
-		for (int event = 0; event < input_midifile[0].size(); event++)
+		// controllers at the start of the track
+		for (int event = 0; event < input_midifile[track].size(); event++)
 		{
-			if (input_midifile[0][event].isTempo())
+			if (input_midifile[track][event].isController())
 			{
-				tempo = input_midifile[0][event].getTempoBPM();
+				track_controllers[track].emplace_back(std::make_pair(
+						input_midifile[track][event].getControllerValue(),
+						input_midifile[track][event].getControllerNumber()
+				));
+			}
+			if (input_midifile[track][event].isNoteOn())
+			{
+				break;
 			}
 		}
-
-//		std::pair<int, int> trackinst;
-//		std::set<std::pair<int, int>> iset;
-//		for (int j = 0; j < input_midifile[0].getEventCount(); j++)
-//		{
-//			if (input_midifile[0][j].isTimbre())
-//			{
-//				trackinst.first = 0;
-//				trackinst.second = input_midifile[0][j].getP1();
-//				iset.insert(trackinst);
-//			}
-//		}
-		int instrument;
+		controllers.clear();
 
 		int current_note_group_ticks = 0;
 		bool is_first_note = true;
-		for (int event = 0; event < input_midifile[0].size(); event++)
+		for (int event = 0; event < input_midifile[track].size(); event++)
 		{
-            if (input_midifile[0][event].isTimbre())
-            {
-                channel = input_midifile[0][event].getChannel();
-                instrument = input_midifile[0][event].getP1();
-                inst_per_channel[channel]=instrument;
-            }
-
-			if (input_midifile[0][event].isNoteOn())
+			// instrument
+			if (input_midifile[track][event].isTimbre())
 			{
-                channel = input_midifile[0][event].getChannel();
-                Note note(input_midifile[0][event].getKeyNumber(),
-                          input_midifile[0][event].getVelocity(),
-                          input_midifile[0][event].getTickDuration(), 0,
-                          inst_per_channel[channel], 0, channel);
+				current_instrument = input_midifile[track][event].getP1();
+			}
 
-				if (!is_first_note && input_midifile[0][event].tick != current_note_group_ticks)
+			// tempo
+			if (input_midifile[track][event].isTempo())
+			{
+				current_tempo = input_midifile[track][event].getTempoBPM();
+				tempo_count++;
+				tempo_sum += current_tempo;
+			}
+
+			// controller
+			if (input_midifile[track][event].isController())
+			{
+				controllers.emplace_back(std::make_pair(input_midifile[track][event].getControllerValue(),input_midifile[track][event].getControllerNumber()));
+			}
+
+			if (input_midifile[track][event].isNoteOn())
+			{
+				Note note(input_midifile[track][event].getKeyNumber(),
+						input_midifile[track][event].getVelocity(),
+						input_midifile[track][event].getTickDuration(), 0,
+						current_instrument, track, input_midifile[track][event].getChannel(),
+						(int)current_tempo, controllers);
+				controllers.clear();
+
+				if (!is_first_note && input_midifile[track][event].tick != current_note_group_ticks)
 				{
-					int delay = input_midifile[0][event].tick - current_note_group_ticks;
+					int delay = input_midifile[track][event].tick - current_note_group_ticks;
 
 					for (auto& note_ : notes[current_note_group_ticks])
 						note_.next_note_delay = delay;
-					current_note_group_ticks = input_midifile[0][event].tick;
+					current_note_group_ticks = input_midifile[track][event].tick;
 				}
 				else
 				{
-					current_note_group_ticks = input_midifile[0][event].tick;
+					current_note_group_ticks = input_midifile[track][event].tick;
 				}
 
 				is_first_note = false;
 
-				notes[input_midifile[0][event].tick].push_back(note);
-			}
-		}
-
-	}
-	else
-	{
-		for (int track = 0; track < tracks; track++)
-		{
-			for (int event = 0; event < input_midifile[track].size(); event++)
-			{
-				if (input_midifile[track][event].isTempo())
-				{
-					tempo = input_midifile[track][event].getTempoBPM();
-				}
-			}
-		}
-
-		std::pair<int, int> trackinst;
-		std::set<std::pair<int, int>> iset;
-		for (int i = 0; i < input_midifile.getTrackCount(); i++)
-		{
-			for (int j = 0; j < input_midifile[i].getEventCount(); j++)
-			{
-				if (input_midifile[i][j].isTimbre())
-				{
-					trackinst.first = i;
-					trackinst.second = input_midifile[i][j].getP1();
-					iset.insert(trackinst);
-				}
-			}
-		}
-
-		for (int track = 0; track < tracks; track++)
-		{
-			int instrument = 0;
-
-			int current_note_group_ticks = 0;
-			bool is_first_note = true;
-			for (int event = 0; event < input_midifile[track].size(); event++)
-			{
-				if (input_midifile[track][event].isTimbre())
-				{
-					instrument = input_midifile[track][event].getP1();
-				}
-				if (input_midifile[track][event].isNoteOn())
-				{
-					Note note(input_midifile[track][event].getKeyNumber(),
-							input_midifile[track][event].getVelocity(),
-							input_midifile[track][event].getTickDuration(), 0,
-							instrument, track, 0);
-
-					if (!is_first_note && input_midifile[track][event].tick != current_note_group_ticks)
-					{
-						int delay = input_midifile[track][event].tick - current_note_group_ticks;
-
-						for (auto& note_ : notes[current_note_group_ticks])
-							note_.next_note_delay = delay;
-						current_note_group_ticks = input_midifile[track][event].tick;
-					}
-					else
-					{
-						current_note_group_ticks = input_midifile[track][event].tick;
-					}
-
-					is_first_note = false;
-
-					notes[input_midifile[track][event].tick].push_back(note);
-				}
+				notes[input_midifile[track][event].tick].push_back(note);
 			}
 		}
 	}
+
+	tempo = tempo_sum / tempo_count;
 }
 
 void MusyGen::exportMidiFile(const std::string& filepath)
