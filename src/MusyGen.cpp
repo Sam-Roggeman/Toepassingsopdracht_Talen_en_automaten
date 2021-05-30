@@ -15,7 +15,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 	}
 	input_midifile.clear();
 	notes.clear();
-	instrument_to_track_map.clear();
+	track_controllers.clear();
 
 	input_midifile.read(filepath);
 
