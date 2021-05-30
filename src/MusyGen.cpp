@@ -17,7 +17,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 	notes.clear();
 	track_controllers.clear();
 
-	input_midifile.read(filepath);
+	input_midifile.read(filepath.c_str());
 
 	input_midifile.absoluteTicks();
 	input_midifile.doTimeAnalysis();
