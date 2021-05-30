@@ -349,9 +349,6 @@ int MusyGen::findMinDuration(const std::vector<Note>& note_group)
 
 void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_notes)
 {
-	std::map<int, int> prev_ins_per_track;
-//	for (int track = 1; track <tracks;track++) prev_ins_per_track[track] = 0;
-
 	generated_midifile.clear();
 
 	generated_midifile.setTicksPerQuarterNote(TPQ);
@@ -359,36 +356,44 @@ void MusyGen::notesToMidi(const std::map<int, std::vector<Note>>& generated_note
 	// adds tracks with notes
 	generated_midifile.addTracks(tracks - 1);
 
-//	// adds timbre to tracks
-//	for (const auto& instrument_track : instrument_to_track_map)
-//	{
-//		generated_midifile.addTimbre(instrument_track.second, 0, 0, instrument_track.first);
-//		prev_ins_per_track[instrument_track.second] = instrument_track.first;
-//	}
-
 	// adds tempo
 	generated_midifile.addTempo(0, 0, tempo);
 	generated_midifile.addTrackName(0, 0, "Trackname");
 
+	int current_instrument = 0;
+	int current_tempo = 0;
+
 	for (const auto& note_group : generated_notes)
 	{
-		int ins;
 		for (const auto& note : note_group.second)
 		{
 			int start_tick = note_group.first;
 			int end_tick = note_group.first + note.duration;
 
 			int track_nr = note.track;
-			ins = note.instrument;
 
-
-			if (prev_ins_per_track.find(track_nr) == prev_ins_per_track.end() || ins != prev_ins_per_track[track_nr])
+			if (note.instrument != current_instrument)
 			{
-				generated_midifile.addTimbre(track_nr, start_tick, 0, ins);
-				prev_ins_per_track[track_nr] = ins;
+				current_instrument = note.instrument;
+				generated_midifile.addTimbre(track_nr, start_tick, note.channel, current_instrument);
 			}
+
+			if (note.tempo != current_tempo)
+			{
+				current_tempo = note.tempo;
+				generated_midifile.addTempo(track_nr, start_tick, current_tempo);
+			}
+
+			if (!note.controllers.empty())
+			{
+				for (const auto& controller : note.controllers)
+				{
+					generated_midifile.addController(track_nr, start_tick, note.channel, controller.first, controller.second);
+				}
+			}
+
 			generated_midifile.addNoteOn(track_nr, start_tick, note.channel, note.key, note.velocity);
-			generated_midifile.addNoteOff(track_nr, end_tick, note.channel, note.key);
+			generated_midifile.addNoteOff(track_nr, end_tick, note.channel, note.key, note.velocity);
 		}
 	}
 	generated_midifile.sortTracks();
