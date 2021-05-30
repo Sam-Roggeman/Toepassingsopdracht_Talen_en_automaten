@@ -9,10 +9,11 @@ Note::Note()
 	instrument = 0;
 	track = 0;
 	channel = 0;
+	tempo = 0;
 }
 
 Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
-		int _instrument, int _track, int _channel)
+		int _instrument, int _track, int _channel, int _tempo, std::vector<std::pair<int,int>> _controllers)
 {
 	key = _key;
 	velocity = _velocity;
@@ -21,6 +22,8 @@ Note::Note(int _key, int _velocity, int _duration, int _next_note_delay,
 	instrument = _instrument;
 	track = _track;
 	channel = _channel;
+	tempo = _tempo;
+	controllers = _controllers;
 }
 
 Note::Note(std::string note_string)

@@ -16,10 +16,12 @@ public:
 	int instrument;
 	int track;
 	int channel;
+	int tempo;
+	std::vector<std::pair<int, int>> controllers;
 
 	Note();
 	Note(int _key, int _velocity, int _duration, int _next_note_delay,
-			int _instrument, int _track, int _channel);
+			int _instrument, int _track, int _channel, int _tempo, std::vector<std::pair<int,int>> controllers);
 	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;
