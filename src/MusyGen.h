@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <limits.h>
+#include <iostream>
 #include <map>
 #include "../libs/midifile/include/MidiFile.h"
 #include "../libs/midifile/include/MidiMessage.h"
