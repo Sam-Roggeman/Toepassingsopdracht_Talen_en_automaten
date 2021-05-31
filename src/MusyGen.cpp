@@ -13,6 +13,7 @@ void MusyGen::importMidiFile(const std::string& filepath)
 		std::cerr << "INPUT FILE NOT FOUND" << std::endl;
 		return;
 	}
+    this->changeVolume(50);
 	input_midifile.clear();
 	notes.clear();
 
@@ -262,9 +263,7 @@ int MusyGen::TicksToSeconds(double ticks) const
 
 double MusyGen::TicksToMs(double ticks) const
 {
-	double TicksPerSecond = (tempo * TPQ) / 60.0;
-	double total_ticks = ticks / TicksPerSecond;
-	return total_ticks * 1000;
+    return 1000*(ticks / ((tempo * TPQ) / 60.0));
 }
 
 void MusyGen::generateMusic(double duration_in_seconds)
@@ -397,161 +396,147 @@ void MusyGen::playMusicInfinitely()
 {
 	smf::MidiMessage message = smf::MidiMessage();
 	auto* midiout = new RtMidiOut;
-	int port = findPort(midiout);
-	midiout->openPort(port);
-	auto type = (short)input_midifile.getType();
-	short int channel;
-	//channel -> instrument
-	std::map<int, int> current_active_instruments;
-	//abs ticks -> notes
-	std::map<unsigned int, Note> node_duration;
-	// instrument van huidige node
-	int instrument;
-	//huidige tick
-	unsigned int current_tick = 0;
-	//aantal sleep - ticks
-	unsigned int sleep_ticks = 0;
-	//aantal nodes dat gestopt is
-	int todelete = 0;
-	//minimum van de huidige groep
-	unsigned int minim = 0;
-	volumeMessage(midiout);
-	SLEEP(1);
-	current_tick += 1;
+    int port = findPort(midiout);
+    midiout->openPort(port);
+    short int type = input_midifile.getType();
+    short int channel;
+    //channel -> instrument
+    std::map<int, int> current_active_instruments;
+    //abs ticks -> notes
+    std::map<unsigned int, std::vector<Note>> node_duration;
+    // instrument van huidige node
+    int instrument;
+    //huidige tick
+    unsigned int current_tick = 0;
+    //aantal sleep - ticks
+    unsigned int sleep_ticks = 0;
+    //aantal nodes dat gestopt is
+    int todelete = 0;
+    //minimum van de huidige groep
+    unsigned int minim = 0;
+    bool sleep_to_node;
+//    // Program change: 192, 5
+//    message.push_back(192);
+//    message.push_back(5);
+//    midiout->sendMessage(&message);
+//    SLEEP(500);
+//    message[0] = 0xF1;
+//    message[1] = 60;
+//    midiout->sendMessage(&message);
+    volumeMessage(midiout);
 
-	std::map<unsigned int, Note>::iterator map_it;
-	std::vector<Note> current_group_of_nodes;
-	std::vector<std::vector<Note>> current_state;
-	if (markov_order == 1)
-	{
-		current_group_of_nodes = music_markov_chain.getRandomState();
-	}
-	else
-	{
-		current_state = music_variable_to_first_chain.getRandomState();
-		current_group_of_nodes = current_state.back();
-	}
 
-	while (playing_inf)
-	{
-		todelete = 0;
-		minim = findMinDelay(current_group_of_nodes) + current_tick;
-		if (paused_inf)
-		{
-			delete midiout;
-			node_duration.clear();
-			while (paused_inf)
-			{
-				if (!playing_inf)
-				{
-					goto cleanup;
-				}
-				SLEEP(50);
-			}
-			midiout = new RtMidiOut;
-			midiout->openPort(port);
-		}
+    std::map<unsigned int, std::vector<Note>>::iterator map_it;
+    std::vector<Note> current_group_of_nodes;
+    std::vector<std::vector<Note>> current_state;
 
-		for (const auto& node : current_group_of_nodes)
-		{
-			if (type == 0)
-			{
-				channel = (short)node.channel;
-			}
-			else
-			{
-				channel = (short)node.track;
-			}
-			instrument = node.instrument;
-			if (volume_changed)
-			{
-				delete midiout;
-				midiout = new RtMidiOut;
-				midiout->openPort(port);
-				volumeMessage(midiout);
+//    for (const auto& track : this->track_controllers){
+//        for (const auto& controller : track.second)
+//        {
+//            message.makeController(track.first,controller.first,controller.second);
+//            midiout->sendMessage(&message);
+//
+//        }
+//    }
 
-			}
-			if (current_active_instruments.find(channel) == current_active_instruments.end() ||
-				current_active_instruments[channel] != instrument)
-			{
-				current_active_instruments[channel] = instrument;
-				message.makeTimbre(channel, instrument);
-				midiout->sendMessage(&message);
-//				SLEEP(1);
-				current_tick += 1;
-			}
-			node_duration[(node.duration + current_tick)] = node;
-			message.makeNoteOn(channel, node.key, node.velocity);
-			midiout->sendMessage(&message);
-//			SLEEP(1);
-			current_tick += 1;
-		}
-		for (const auto& node:node_duration)
-		{
-			if (type == 0)
-			{
-				channel = (short)node.second.channel;
-			}
-			else
-			{
-				channel = (short)node.second.track;
-			}
-			//als de note gestopt moet worden
-			if (current_tick >= node.first)
-			{
-				message.makeNoteOff(channel, node.second.key);
+    if (markov_order == 1 ) {
+        current_group_of_nodes = music_markov_chain.getRandomState();
+    }
+    else {
+        current_state = music_variable_to_first_chain.getRandomState();
+        current_group_of_nodes = current_state.back();
+    }
 
-				midiout->sendMessage(&message);
-//                SLEEP(1);
-//                current_tick +=1;
-				todelete++;
-			}
-				//anders sleep tot nieuwe groep of next note
-			else if (node.first < minim)
-			{
-				sleep_ticks = node.first - current_tick;
-				SLEEP(TicksToMs(sleep_ticks)); //*120/tempo
-				current_tick += sleep_ticks;
-				message.makeNoteOff(channel, node.second.key, node.second.velocity);
-				midiout->sendMessage(&message);
-//                SLEEP(1);
-//                current_tick +=1;
-				todelete++;
-			}
-			else break;
-		}
-		if (current_tick < minim)
-		{
-			sleep_ticks = (minim - current_tick);
-			SLEEP(TicksToMs(sleep_ticks));
-			current_tick += sleep_ticks;
+    while (playing_inf) {
+        todelete = 0;
+        minim = findMinDelay(current_group_of_nodes) + current_tick;
+        if (paused_inf){
+            for (const auto &notes_v:node_duration) {
+                for (const auto &node:notes_v.second) {
+                    message.makeNoteOff(node.getInfChannel(type), node.key, node.velocity);
+                }
+            }
+                node_duration.clear();
+            while (paused_inf){
+                if (!playing_inf){
+                    goto cleanup;
+                }
+                SLEEP(200);
+            }
+        }
 
-		}
 
-		if (markov_order == 1)
-		{
-			current_group_of_nodes = music_markov_chain.getNextState(current_group_of_nodes);
-		}
-		else if (markov_order > 1)
-		{
-			current_state = music_variable_to_first_chain.getNextState(current_state);
-			current_group_of_nodes = current_state.back();
-		}
-		if (todelete > 0)
-		{
-			map_it = node_duration.begin();
-			std::advance(map_it, todelete);
-			node_duration.erase(node_duration.begin(), map_it);
-		}
-	}
+
+        for (const auto &node : current_group_of_nodes) {
+            channel = node.getInfChannel(type);
+            instrument = node.instrument;
+            if (volume_changed) {
+                delete midiout;
+                midiout = new RtMidiOut;
+                midiout->openPort(port);
+                volumeMessage(midiout);
+
+            }
+            if (current_active_instruments.find(channel) == current_active_instruments.end() ||
+                current_active_instruments[channel] != instrument) {
+                current_active_instruments[channel] = instrument;
+                message.makeTimbre(channel, instrument);
+                midiout->sendMessage(&message);
+
+
+            }
+            node_duration[(node.duration + current_tick)].emplace_back( node);
+            for (const auto& controller : node.controllers)
+                {
+                    message.makeController(channel,controller.first,controller.second);
+                    midiout->sendMessage(&message);
+                }
+            message.makeNoteOn(channel, node.key, node.velocity);
+            midiout->sendMessage(&message);
+        }
+        for (const auto &notes_v:node_duration) {
+            sleep_to_node = notes_v.first <= minim;
+            //als de note gestopt moet worden
+            if (notes_v.first < current_tick || sleep_to_node) {
+                if (sleep_to_node){
+                    sleep_ticks = notes_v.first - current_tick;
+                    SLEEP(TicksToMs(sleep_ticks));
+                    current_tick += sleep_ticks;
+                }
+                todelete++;
+                for (const auto &node:notes_v.second) {
+                    channel = node.getInfChannel(type);
+                    message.makeNoteOff(channel, node.key, node.velocity);
+                    midiout->sendMessage(&message);
+                }
+            } else break;
+        }
+        if (current_tick < minim) {
+            sleep_ticks = (minim - current_tick);
+            SLEEP(TicksToMs( sleep_ticks));
+            current_tick += sleep_ticks;
+        }
+
+        if (markov_order == 1) {
+            current_group_of_nodes = music_markov_chain.getNextState(current_group_of_nodes);
+        } else if (markov_order > 1) {
+            current_state = music_variable_to_first_chain.getNextState(current_state);
+            current_group_of_nodes = current_state.back();
+        }
+        if (todelete > 0) {
+            map_it = node_duration.begin();
+            std::advance(map_it, todelete);
+            node_duration.erase(node_duration.begin(), map_it);
+        }
+    }
 cleanup:
-	delete midiout;
+    delete midiout;
 }
 
 int MusyGen::findPort(RtMidiOut* midiout)
 {
 	std::string portName;
-	int i = 0, nPorts = (int)midiout->getPortCount();
+	unsigned int i = 0, nPorts = midiout->getPortCount();
 	if (nPorts == 0)
 	{
 		std::cout << "No output ports available!" << std::endl;
@@ -586,22 +571,22 @@ void MusyGen::volumeMessage(RtMidiOut* midiout)
 	//SysEx
 	message.emplace_back(0xF0);
 	//Realtime
-	message.emplace_back(0x7F);
-	//The SysEx channel. Could be from 0x00 to 0x7F.
-	message.emplace_back(0x7F);
-	//Sub-ID -- Device Control
-	message.emplace_back(0x04);
-	//Sub-ID2 -- Master Volume
-	message.emplace_back(0x01);
-	unsigned int LSB = volume & 0x7F;
-	//Bits 0 to 6 of a 14-bit volume
-	message.emplace_back(LSB);
-	unsigned int MSB = volume & 0x3F80;
-	MSB >>= 7;
-	//Bits 7 to 13 of a 14-bit volume
-	message.emplace_back(MSB);
-	//End of SysEx
-	message.emplace_back(0xF);
+    message.emplace_back(0x7F);
+    //The SysEx channel. Could be from 0x00 to 0x7F.
+    message.emplace_back(0x7F);
+    //Sub-ID -- Device Control
+    message.emplace_back(0x04);
+    //Sub-ID2 -- Master Volume
+    message.emplace_back(0x01);
+    unsigned int LSB = volume & 0x7F;
+    //Bits 0 to 6 of a 14-bit volume
+    message.emplace_back(LSB);
+    unsigned int MSB = volume & 0x3F80;
+    MSB >>= 7;
+    //Bits 7 to 13 of a 14-bit volume
+    message.emplace_back(MSB);
+    //End of SysEx
+    message.emplace_back(0xF);
 
 	volume_changed = false;
 	midiout->sendMessage(&message);
@@ -653,33 +638,28 @@ int MusyGen::findMinDelay(std::vector<Note>& note_group)
 	return min_delay;
 }
 
-void MusyGen::pauseMessage(RtMidiOut* pOut)
-{
-	std::vector<unsigned char> message;
-	message.resize(0);
-	message.emplace_back(0b11111100);
-	pOut->sendMessage(&message);
-	for (int i = 0; i < 16; i++)
-	{
-		message.resize(0);
-		unsigned char a = 0b10111111 & i;
-		message.emplace_back(a);
-		a = 0xFF & 120;
-		message.emplace_back(a);
-		a = 0xFF & 0;
-		message.emplace_back(a);
-		pOut->sendMessage(&message);
-	}
+void MusyGen::pauseMessage(RtMidiOut *pOut) {
+    std::vector<unsigned char> message;
+    message.resize(0);
+    message.emplace_back(0b11111100);
+    pOut->sendMessage(&message);
+    for (int i = 0; i<16;i++ ) {
+        message.resize(0);
+        unsigned char a = 0b10111111 & i;
+        message.emplace_back(a);
+        a = 0xFF & 120;
+        message.emplace_back(a);
+        a = 0xFF & 0;
+        message.emplace_back(a);
+        pOut->sendMessage(&message);
+    }
+}
+void MusyGen::startMessage(RtMidiOut *pOut) {
+    std::vector<unsigned char> message;
+    message.emplace_back(0b11111011);
+    pOut->sendMessage(&message);
 }
 
-void MusyGen::startMessage(RtMidiOut* pOut)
-{
-	std::vector<unsigned char> message;
-	message.emplace_back(0b11111011);
-	pOut->sendMessage(&message);
-}
-
-void MusyGen::setPause(bool l)
-{
-	paused_inf = l;
+void MusyGen::setPause(bool l) {
+    paused_inf = l;
 }

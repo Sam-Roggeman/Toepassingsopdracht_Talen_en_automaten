@@ -117,3 +117,12 @@ bool Note::operator>=(const Note& other_note) const
 	return std::tie(this->key, this->duration, this->instrument, this->track, this->channel, this->next_note_delay) >=
 		   std::tie(other_note.key, other_note.duration, other_note.instrument, other_note.track, other_note.channel, other_note.next_note_delay);
 }
+
+int Note::getInfChannel(int type) const {
+    if (type == 0){
+        return channel;
+    }
+    else {
+        return track;
+    }
+}

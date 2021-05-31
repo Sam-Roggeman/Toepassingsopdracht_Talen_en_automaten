@@ -30,6 +30,8 @@ public:
 	bool operator>=(const Note& other_note) const;
 
 	[[nodiscard]] std::string toString() const;
+
+    int getInfChannel(int type) const;
 };
 
 

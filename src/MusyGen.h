@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <limits.h>
+#include <map>
 #include "../libs/midifile/include/MidiFile.h"
 #include "../libs/midifile/include/MidiMessage.h"
 #include "data_structures/Note.h"
@@ -34,7 +35,7 @@ public:
 	smf::MidiFile generated_midifile;
 
 	unsigned int markov_order = 1;
-	int volume = 50;
+	int volume;
 	bool volume_changed = false;
 	bool playing_inf = false;
     bool paused_inf = false;
