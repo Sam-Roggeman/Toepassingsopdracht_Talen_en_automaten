@@ -355,6 +355,9 @@ color: rgb(255, 255, 255);
    <property name="text">
     <string/>
    </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="pushButton_5">
    <property name="geometry">

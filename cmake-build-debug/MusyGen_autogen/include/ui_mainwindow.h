@@ -166,6 +166,7 @@ public:
         lineEdit->setStyleSheet(QString::fromUtf8("background-color: rgb(43,43,43);\n"
 "color: rgb(255, 255, 255);\n"
 ""));
+        lineEdit->setReadOnly(true);
         pushButton_5 = new QPushButton(Mainwindow);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
         pushButton_5->setGeometry(QRect(20, 10, 93, 28));
