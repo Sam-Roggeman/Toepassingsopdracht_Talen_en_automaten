@@ -506,7 +506,7 @@ void MusyGen::playMusicInfinitely()
                 todelete++;
                 for (const auto &node:notes_v.second) {
                     channel = node.getInfChannel(type);
-                    message.makeNoteOff(channel, node.key, node.velocity);
+                    message.makeNoteOff(channel, node.key);
                     midiout->sendMessage(&message);
                 }
             } else break;
