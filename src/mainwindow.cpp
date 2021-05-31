@@ -35,6 +35,7 @@ Mainwindow::Mainwindow(QWidget *parent) :
     ui->Start->move(ui->Start->x()+30,ui->Start->y());
     ui->PlainTextEdit->setFrameStyle(QFrame::NoFrame);
     ui->PlainTextEdit->viewport()->setAutoFillBackground(false);
+    ui->lineEdit->isReadOnly();
 }
 
 Mainwindow::~Mainwindow()
@@ -45,7 +46,7 @@ Mainwindow::~Mainwindow()
 void Mainwindow::on_pushButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open midi file"), "/home/jana", tr("Midi file ( *.mid)"));
+                                                    tr("Open midi file"), "/home/untitled", tr("Midi file ( *.mid)"));
     if(!fileName.isEmpty()){
         this->on_stackedWidget_currentChanged(1);
         musyGen = new MusyGen;
@@ -143,8 +144,8 @@ void Mainwindow::on_Pause_clicked()
 void Mainwindow::on_Export_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Save music file"), "/home/jana",
-                                                    tr("Midi file ( *.mid)"));
+                                                    tr("Save music file"), "/home/untitled",
+                                                    tr("Midi file ( *.mid *.mp3)"));
     if(!fileName.isEmpty()){
         this->on_stackedWidget_currentChanged(6);
         musyGen->exportMidiFile(fileName.toStdString());
@@ -214,7 +215,7 @@ void Mainwindow::on_pushButton_5_clicked()
                                         "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
         ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
                                      "QPushButton:enabled { background-color: rgb(232,228,228); color: rgb(0, 0, 0);}\n");
-        ui->PlainTextEdit->setStyleSheet("QTextEdit::enabled {color : rgb(0,0,0);}\n");
+        ui->PlainTextEdit->setStyleSheet("QTextEdit::enabled { background-color: rgb(232,228,228); color : rgb(0,0,0);}\n");
         QString qString("../Icon/Icon.png");
         QIcon qIcon(qString);
         setWindowIcon(qIcon);
@@ -265,7 +266,7 @@ void Mainwindow::on_pushButton_5_clicked()
                                         "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
         ui->diff_time->setStyleSheet("QPushButton { background-color: grey; }\n"
                                      "QPushButton:enabled { background-color: rgb(7,132,181); color: rgb(255, 255, 255);}\n");
-        ui->PlainTextEdit->setStyleSheet("QTextEdit::enabled {color : rgb(255,255,255);}\n");
+        ui->PlainTextEdit->setStyleSheet("QTextEdit::enabled {background-color: rgb(43,43,43); color : rgb(255,255,255);}\n");
         QString qString("../Icon/Icon2.png");
         QIcon qIcon(qString);
         setWindowIcon(qIcon);

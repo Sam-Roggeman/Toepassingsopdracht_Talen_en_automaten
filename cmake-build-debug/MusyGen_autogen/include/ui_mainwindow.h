@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 6.1.0
+** Created by: Qt User Interface Compiler version 6.0.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -106,7 +106,7 @@ public:
         Infinite->setGeometry(QRect(310, 230, 93, 28));
         SetTime = new QPushButton(page_3);
         SetTime->setObjectName(QString::fromUtf8("SetTime"));
-        SetTime->setGeometry(QRect(300, 260, 121, 31));
+        SetTime->setGeometry(QRect(290, 260, 131, 31));
         stackedWidget->addWidget(page_3);
         page_4 = new QWidget();
         page_4->setObjectName(QString::fromUtf8("page_4"));
@@ -184,7 +184,7 @@ public:
     void retranslateUi(QDialog *Mainwindow)
     {
         Mainwindow->setWindowTitle(QCoreApplication::translate("Mainwindow", "Dialog", nullptr));
-        pushButton->setText(QCoreApplication::translate("Mainwindow", "Generate", nullptr));
+        pushButton->setText(QCoreApplication::translate("Mainwindow", "Import file", nullptr));
         pushButton_2->setText(QCoreApplication::translate("Mainwindow", "Exit", nullptr));
         confirm->setText(QCoreApplication::translate("Mainwindow", "Confirm", nullptr));
         PlainTextEdit->setHtml(QCoreApplication::translate("Mainwindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -195,7 +195,7 @@ public:
 "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Choose a markovchain order between 1 and 5.</p></body></html>", nullptr));
         Infinite->setText(QCoreApplication::translate("Mainwindow", "Play Infinitely", nullptr));
-        SetTime->setText(QCoreApplication::translate("Mainwindow", "Play for a Set Time", nullptr));
+        SetTime->setText(QCoreApplication::translate("Mainwindow", "Export for a set time", nullptr));
         minutes->setText(QCoreApplication::translate("Mainwindow", "In minutes", nullptr));
         seconds->setText(QCoreApplication::translate("Mainwindow", "In seconds", nullptr));
         textEdit->setHtml(QCoreApplication::translate("Mainwindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -208,7 +208,7 @@ public:
         Stop->setText(QCoreApplication::translate("Mainwindow", "Stop", nullptr));
         Pause->setText(QCoreApplication::translate("Mainwindow", "Pause", nullptr));
         Export->setText(QCoreApplication::translate("Mainwindow", "Export", nullptr));
-        New_generate->setText(QCoreApplication::translate("Mainwindow", "Generate new file", nullptr));
+        New_generate->setText(QCoreApplication::translate("Mainwindow", "Import new file", nullptr));
         diff_order->setText(QCoreApplication::translate("Mainwindow", "Use different order", nullptr));
         diff_time->setText(QCoreApplication::translate("Mainwindow", "Choose a different time set", nullptr));
         pushButton_4->setText(QCoreApplication::translate("Mainwindow", "Exit", nullptr));
