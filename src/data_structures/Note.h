@@ -1,7 +1,6 @@
 #ifndef MUSYGEN_NOTE_H
 #define MUSYGEN_NOTE_H
 
-
 #include <tuple>
 #include <string>
 #include <vector>
@@ -21,7 +20,7 @@ public:
 
 	Note();
 	Note(int _key, int _velocity, int _duration, int _next_note_delay,
-			int _instrument, int _track, int _channel, int _tempo, std::vector<std::pair<int,int>> controllers);
+			int _instrument, int _track, int _channel, int _tempo, const std::vector<std::pair<int,int>>& _controllers);
 	explicit Note(std::string note_string);
 
 	bool operator==(const Note& other_note) const;

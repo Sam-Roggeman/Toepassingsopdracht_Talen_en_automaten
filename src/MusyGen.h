@@ -12,8 +12,6 @@
 #include <iomanip>
 #include "../libs/RTMidi//include/RtMidi.h"
 
-
-
 // Platform-dependent sleep routines.
 #if defined(WIN32)
 #include <windows.h>
@@ -30,7 +28,7 @@ public:
 	std::map<int, std::vector<Note>> notes;
 	int TPQ = 0;
 	double tempo = 0;
-	std::map<int, std::vector<std::pair<int, int>>> track_controllers;
+
 	MarkovChain<std::vector<Note>> music_markov_chain;
 	MarkovChain<std::vector<std::vector<Note>>> music_variable_to_first_chain;
 	smf::MidiFile generated_midifile;
@@ -40,7 +38,6 @@ public:
 	bool volume_changed = false;
 	bool playing_inf = false;
     bool paused_inf = false;
-
 
 public:
 	MusyGen();
@@ -69,35 +66,32 @@ public:
 
     void setPause(bool l);
 
-
 private:
 	static int findMaxDuration(const std::vector<Note>& note_group);
 
 	static int findMinDuration(const std::vector<Note>& note_group);
 
-	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
+	static int findMinDelay(std::vector<Note> &note_group);
 
     int SecondsToTicks(double duration) const;
 
     int TicksToSeconds(double ticks) const;
 
-    void startNote(char key, char velocity, RtMidiOut *midiout);
+	double TicksToMs(double ticks) const;
 
-    void endNote(char key, char velocity, RtMidiOut *midiout);
+	void notesToMidi(const std::map<int, std::vector<Note>>& generated_notes);
+
+	static void startNote(char key, char velocity, RtMidiOut *midiout);
+
+    static void endNote(char key, char velocity, RtMidiOut *midiout);
 
     void volumeMessage(RtMidiOut *midiout);
 
-
-
-    double TicksToMs(double ticks) const;
-
-    static int findMinDelay(std::vector<Note> &note_group);
-
     static void pauseMessage(RtMidiOut *pOut);
 
-    void startMessage(RtMidiOut *pOut);
+    static void startMessage(RtMidiOut *pOut);
 
-    int findPort(RtMidiOut *midiout);
+    static int findPort(RtMidiOut *midiout);
 };
 
 
