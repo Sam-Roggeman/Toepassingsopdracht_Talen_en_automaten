@@ -93,6 +93,10 @@ private:
 
     static void startMessage(RtMidiOut *pOut);
 
+    /**
+ * test files als referencie voor het openen van ports
+ * https://www.music.mcgill.ca/~gary/rtmidi/index.html
+ */
     static int findPort(RtMidiOut *midiout);
 };
 
